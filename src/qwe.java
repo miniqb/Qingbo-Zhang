@@ -1,5 +1,6 @@
 public class qwe {
     public static void main(String[] args) {
-        System.out.println(11);
+        int q=11;
+        System.out.println(q);
     }
 }
