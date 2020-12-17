@@ -1,8 +1,10 @@
 package Judge;
 
+import Player.Player;
+
 public abstract class Judge {
-    public final static String G_CHU = "Chu";   //楚方
-    public final static String G_HAN = "Han";   //汉方
+    public final static byte G_CHU = 0;         //楚方
+    public final static byte G_HAN = 1;         //汉方
     public final static byte C_GO = 1;          //走子
     public final static byte C_RETRACT = 2;     //悔棋
     public final static byte C_GIVE_UP = 3;     //认输
