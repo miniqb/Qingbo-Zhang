@@ -4,6 +4,13 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class ChessPiece implements Piece{
+    public static String P_JIANG_CHU = "将";
+    public static String P_SHI_CHU = "士";
+    public static String P_XIANG_CHU = "象";
+    public static String P_MA_CHU = "马";
+    public static String P_CHE_CHU = "车";
+
+
     private Point position;
     private final String name;
     private final byte group;
