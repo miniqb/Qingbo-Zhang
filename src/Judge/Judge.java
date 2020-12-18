@@ -3,8 +3,9 @@ package Judge;
 import Player.Player;
 
 public abstract class Judge {
-    public final static byte G_CHU = 0;         //楚方
-    public final static byte G_HAN = 1;         //汉方
+    public final static byte G_NULL = 0;        //中间
+    public final static byte G_CHU = 1;         //楚方
+    public final static byte G_HAN = 2;         //汉方
     public final static byte C_GO = 1;          //走子
     public final static byte C_RETRACT = 2;     //悔棋
     public final static byte C_GIVE_UP = 3;     //认输
