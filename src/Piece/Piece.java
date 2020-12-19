@@ -4,7 +4,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public interface Piece {
-    void Move(Point pos);      //移动自身位置
+    void Move(int x,int y);      //移动自身位置
     BufferedImage GetImage();           //画自己
     String GetName();          //返回名字
     byte GetID();              //返回Id

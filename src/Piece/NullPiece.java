@@ -1,24 +1,24 @@
 package Piece;
 
 import Judge.Judge;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class NullPiece implements Piece{
-    private Point position;
+    private final Point position;
     public final static String NAME = "Null";
     public final static byte ID = 0;
 
-    NullPiece() {
+    public NullPiece() {
         position=new Point(0,0);
     }
-    NullPiece(int x,int y) {
+    public NullPiece(int x,int y) {
         position=new Point(x,y);
     }
     @Override
-    public void Move(Point pos) {
-        position=pos;
+    public void Move(int x,int y) {
+        position.x=x;
+        position.y=y;
     }
 
     @Override
