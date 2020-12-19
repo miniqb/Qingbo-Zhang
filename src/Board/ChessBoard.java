@@ -1,16 +1,18 @@
 package Board;
 
 import Piece.*;
-
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 public class ChessBoard {
     private static ChessBoard me;
-
+//data area
     public final static byte WIDTH = 9; //棋盘宽度
     public final static byte HIGH = 10; //棋盘高度
-    public final static byte PIECES_SUM = 36; //棋子总数
+    //public final static byte PIECES_SUM = 36; //棋子总数
     private final Piece[][] pieces_map; //棋盘数组
     private final Piece[] pieces_all; //棋子容器
     private Piece now_piece_chu;
@@ -19,15 +21,29 @@ public class ChessBoard {
     private Piece aim_piece_han;
     private Piece now_select;
     private Piece aim_select;
-    private BufferedImage image;
+    private BufferedImage board_image;
+
+//draw area
+    private final int WIDTH_SIZE;
+    private final int HIGH_SIZE;
+
+
 
     private ChessBoard(){
+        try {
+            board_image= ImageIO.read(new File("image/b_chessboard.png"));
+        } catch (IOException e) {
+            System.out.println("图片加载错误！");
+            e.printStackTrace();
+        }
+        WIDTH_SIZE=board_image.getWidth();
+        HIGH_SIZE=board_image.getHeight();
         //构造棋盘数组
         pieces_map = new Piece[WIDTH+1][];
         for (int i = 0; i <= WIDTH; i++) {
             pieces_map[i] = new Piece[HIGH+1];
         }
-        pieces_all = new Piece[PIECES_SUM+1];
+        pieces_all = new Piece[33];
         CreatePieces();
         for (int i = 0; i <= WIDTH; i++) { //在棋盘上摆上”空子“
             for (int j = 0; j <= HIGH ; j++) {
@@ -38,10 +54,10 @@ public class ChessBoard {
             Point temp=pieces_all[i].GetPosition();
             pieces_map[temp.x][temp.y]=pieces_all[i];
         }
-
     }
     private void CreatePieces(){//创建所有棋子对象
-        pieces_all[1]=new NullPiece();
+        pieces_all[0]=new NullPiece();
+        pieces_all[1]=new ChessPiece(ChessPiece.P_JU_CHU,(byte) 1,new Point(1,10));
         pieces_all[2]=new ChessPiece(ChessPiece.P_JU_CHU,(byte) 1,new Point(9,10));
         pieces_all[3]=new ChessPiece(ChessPiece.P_MA_CHU,(byte) 2,new Point(2,10));
         pieces_all[4]=new ChessPiece(ChessPiece.P_MA_CHU,(byte) 3,new Point(8,10));

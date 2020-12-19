@@ -4,6 +4,7 @@ public class ChessPlayer implements Player{
     private byte group;
     private byte choice;
 
+    public ChessPlayer(){}
     @Override
     public byte GetGroup() {
         return group;
