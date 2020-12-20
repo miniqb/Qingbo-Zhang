@@ -2,6 +2,7 @@ package Board;
 
 import Piece.*;
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -12,6 +13,7 @@ public class ChessBoard {
 //data area
     public final static byte WIDTH = 9; //棋盘宽度
     public final static byte HIGH = 10; //棋盘高度
+
     //public final static byte PIECES_SUM = 36; //棋子总数
     private final Piece[][] pieces_map; //棋盘数组
     private final Piece[] pieces_all; //棋子容器
@@ -22,12 +24,16 @@ public class ChessBoard {
     private Piece now_select;
     private Piece aim_select;
     private BufferedImage board_image;
-
+    private BufferedImage game_image;
 //draw area
+    private final int UNIT_SIZE = 65;
     private final int WIDTH_SIZE;
     private final int HIGH_SIZE;
+    private final int OFFSET_W;
+    private final int OFFSET_H;
 
-
+    JFrame game_frame = new JFrame("象棋");
+    DrawBoard draw_board = new DrawBoard();
 
     private ChessBoard(){
         try {
@@ -38,6 +44,9 @@ public class ChessBoard {
         }
         WIDTH_SIZE=board_image.getWidth();
         HIGH_SIZE=board_image.getHeight();
+        OFFSET_W=(WIDTH_SIZE-WIDTH*UNIT_SIZE)/2;
+        OFFSET_H=(HIGH_SIZE-HIGH*UNIT_SIZE)/2;
+        game_image=new BufferedImage(WIDTH_SIZE,HIGH_SIZE,BufferedImage.TYPE_INT_RGB);
         //构造棋盘数组
         pieces_map = new Piece[WIDTH+1][];
         for (int i = 0; i <= WIDTH; i++) {
@@ -54,7 +63,14 @@ public class ChessBoard {
             Point temp=pieces_all[i].GetPosition();
             pieces_map[temp.x][temp.y]=pieces_all[i];
         }
+        draw_board.setPreferredSize(new Dimension(WIDTH_SIZE,HIGH_SIZE));
+        UpdateFrames();
+        game_frame.add(draw_board);
+        game_frame.pack();
+        game_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        game_frame.setVisible(true);
     }
+
     private void CreatePieces(){//创建所有棋子对象
         pieces_all[0]=new NullPiece();
         pieces_all[1]=new ChessPiece(ChessPiece.P_JU_CHU,(byte) 1,new Point(1,10));
@@ -67,7 +83,7 @@ public class ChessBoard {
         pieces_all[8]=new ChessPiece(ChessPiece.P_SHI_CHU,(byte) 7,new Point(6,10));
         pieces_all[9]=new ChessPiece(ChessPiece.P_JIANG_CHU,(byte) 8,new Point(5,10));
         pieces_all[10]=new ChessPiece(ChessPiece.P_PAO_CHU,(byte) 9,new Point(2,8));
-        pieces_all[11]=new ChessPiece(ChessPiece.P_PAO_CHU,(byte) 10,new Point(7,8));
+        pieces_all[11]=new ChessPiece(ChessPiece.P_PAO_CHU,(byte) 10,new Point(8,8));
         pieces_all[12]=new ChessPiece(ChessPiece.P_ZU_CHU,(byte) 11,new Point(1,7));
         pieces_all[13]=new ChessPiece(ChessPiece.P_ZU_CHU,(byte) 12,new Point(3,7));
         pieces_all[14]=new ChessPiece(ChessPiece.P_ZU_CHU,(byte) 13,new Point(5,7));
@@ -84,7 +100,7 @@ public class ChessBoard {
         pieces_all[24]=new ChessPiece(ChessPiece.P_SHI_HAN,(byte) 7,new Point(6,1));
         pieces_all[25]=new ChessPiece(ChessPiece.P_SHUAI_HAN,(byte) 8,new Point(5,1));
         pieces_all[26]=new ChessPiece(ChessPiece.P_PAO_HAN,(byte) 9,new Point(2,3));
-        pieces_all[27]=new ChessPiece(ChessPiece.P_PAO_HAN,(byte) 10,new Point(7,3));
+        pieces_all[27]=new ChessPiece(ChessPiece.P_PAO_HAN,(byte) 10,new Point(8,3));
         pieces_all[28]=new ChessPiece(ChessPiece.P_BING_HAN,(byte) 11,new Point(1,4));
         pieces_all[29]=new ChessPiece(ChessPiece.P_BING_HAN,(byte) 12,new Point(3,4));
         pieces_all[30]=new ChessPiece(ChessPiece.P_BING_HAN,(byte) 13,new Point(5,4));
@@ -97,25 +113,48 @@ public class ChessBoard {
             me=new ChessBoard();
         return me;
     }
+
     public void DrawBoard (){
     }
+
     public void Select(Point point){
 
     }
+
     public Piece GetNow(){
         return now_select;
     }
+
     public Piece GetAim(){
         return aim_select;
     }
-    public void UpdatePieces(){
 
+    public void UpdateFrames(){
+        Graphics game_imageGraphics=game_image.getGraphics();
+        game_imageGraphics.drawImage(board_image,0,0,null);
+        for (Piece piece:pieces_all) {
+            if (piece.IsAlive()) {
+                int posX=(piece.GetPosition().x-1) * UNIT_SIZE+OFFSET_W;
+                int posY=(piece.GetPosition().y-1) * UNIT_SIZE+OFFSET_H;
+                game_imageGraphics.drawImage(piece.GetImage(),posX,posY,null);
+            }
+        }
+        draw_board.repaint();
     }
+
     public Piece GetPiece(int x,int y){
         return pieces_map[x][y];
     }
+
     public void MovePiece(){
 
     }
 
+    class DrawBoard extends JPanel{
+        @Override
+        public void paint(Graphics g) {
+            //画画板
+            g.drawImage(game_image,0,0,null);
+        }
+    }
 }

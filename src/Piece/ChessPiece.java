@@ -160,7 +160,7 @@ public class ChessPiece implements Piece{
 
     @Override
     public boolean IsAlive() {
-        return false;
+        return true;
     }
 
     @Override
