@@ -6,15 +6,19 @@ import Player.*;
 
 public class ChessGame {
     private ChessPlayer player_1;
-    private Player player_2;
+    private ChessPlayer player_2;
     private ChessBoard chessboard;
     private Judge judge;
     public ChessGame(){
         player_1=new ChessPlayer();
         player_2=new ChessPlayer();
-        chessboard=ChessBoard.Init();
     }
     void StartGame(){
+        player_1.SetGroup(Judge.G_CHU);
+        player_2.SetGroup(Judge.G_HAN);
 
+        Judge.SetPlayers(player_1,player_2);
+
+        chessboard=ChessBoard.Init();
     }
 }

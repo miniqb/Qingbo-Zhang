@@ -30,8 +30,12 @@ public abstract class Judge {
         return loser;
     }
 
-    public static void setPlayer_1(Player player_1,Player player_2) {
+    public static void SetPlayers(Player player_1,Player player_2) {
         Judge.player_1 = player_1;
         Judge.player_2 = player_2;
+    }
+
+    public static byte GetHome() {
+        return player_1.GetGroup();
     }
 }

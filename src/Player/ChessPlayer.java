@@ -17,7 +17,7 @@ public class ChessPlayer implements Player{
 
     public void MakeChoice(){}
 
-    public void setGroup(byte group) {
+    public void SetGroup(byte group) {
         this.group = group;
     }
 
