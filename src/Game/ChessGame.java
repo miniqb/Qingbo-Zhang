@@ -4,10 +4,13 @@ import Board.ChessBoard;
 import Judge.*;
 import Player.*;
 
+import javax.swing.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
 public class ChessGame {
-    private ChessPlayer player_1;
-    private ChessPlayer player_2;
-    private ChessBoard chessboard;
+    private final ChessPlayer player_1;
+    private final ChessPlayer player_2;
     private Judge judge;
     public ChessGame(){
         player_1=new ChessPlayer();
@@ -19,6 +22,11 @@ public class ChessGame {
 
         Judge.SetPlayers(player_1,player_2);
 
-        chessboard=ChessBoard.Init();
+        ChessBoard chessboard = ChessBoard.Init();
+
+        chessboard.StartOperation();
+
+
+
     }
 }

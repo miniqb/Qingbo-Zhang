@@ -1,21 +1,21 @@
 package Player;
 
-public class ChessPlayer implements Player{
+public class ChessPlayer {
     private byte group;
     private byte choice;
 
     public ChessPlayer(){}
-    @Override
     public byte GetGroup() {
         return group;
     }
 
-    @Override
     public byte GetChoice() {
         return choice;
     }
 
-    public void MakeChoice(){}
+    public void MakeChoice(byte choice){
+        this.choice=choice;
+    }
 
     public void SetGroup(byte group) {
         this.group = group;

@@ -2,9 +2,14 @@ package Board;
 
 import Judge.Judge;
 import Piece.*;
+import Player.ChessPlayer;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -13,39 +18,10 @@ public class ChessBoard {
     private static ChessBoard me;
 //data area
     private static final int[][] positions ={
-        {0,0},
-        {1,10},
-        {9,10},
-        {2,10},
-        {8,10},
-        {3,10},
-        {7,10},
-        {4,10},
-        {6,10},
-        {5,10},
-        {2,8},
-        {8,8},
-        {1,7},
-        {3,7},
-        {5,7},
-        {7,7},
-        {9,7},
-        {1,1},
-        {9,1},
-        {2,1},
-        {8,1},
-        {3,1},
-        {7,1},
-        {4,1},
-        {6,1},
-        {5,1},
-        {2,3},
-        {8,3},
-        {1,4},
-        {3,4},
-        {5,4},
-        {7,4},
-        {9,4},
+          {0,0}, {1,10}, {9,10}, {2,10}, {8,10}, {3,10}, {7,10},
+          {4,10}, {6,10}, {5,10}, {2,8}, {8,8}, {1,7}, {3,7}, {5,7},
+          {7,7}, {9,7}, {1,1}, {9,1}, {2,1}, {8,1}, {3,1}, {7,1}, {4,1},
+          {6,1}, {5,1}, {2,3}, {8,3}, {1,4}, {3,4}, {5,4}, {7,4}, {9,4},
     };
     public final static byte WIDTH = 9; //棋盘宽度
     public final static byte HIGH = 10; //棋盘高度
@@ -90,6 +66,10 @@ public class ChessBoard {
         pieces_all = new Piece[33];
         CreatePieces(); //创造棋子
         InitializePieces(); //按初始位置摆好棋子
+
+        now_select=pieces_all[0];
+        aim_select=pieces_all[0];
+
 
         draw_board.setPreferredSize(new Dimension(WIDTH_SIZE,HIGH_SIZE));
         UpdateFrames();
@@ -159,32 +139,16 @@ public class ChessBoard {
         return me;
     }
 
-    public void DrawBoard (){
-    }
-
-    public void Select(Point point){
-
-    }
-
-    public Piece GetNow(){
-        return now_select;
-    }
-
-    public Piece GetAim(){
-        return aim_select;
-    }
-
     public void UpdateFrames(){
         Graphics game_imageGraphics=game_image.getGraphics();
         game_imageGraphics.drawImage(board_image,0,0,null);
         for (Piece piece:pieces_all) {
-            if (piece.IsAlive()) {
+            if (piece.IsAlive()&&piece!=now_select) {
                 int posX=(piece.GetPosition().x-1) * UNIT_SIZE+OFFSET_W;
                 int posY=(piece.GetPosition().y-1) * UNIT_SIZE+OFFSET_H;
                 game_imageGraphics.drawImage(piece.GetImage(),posX,posY,null);
             }
         }
-        draw_board.repaint();
     }
 
     public Piece GetPiece(int x,int y){
@@ -192,6 +156,45 @@ public class ChessBoard {
     }
 
     public void MovePiece(){
+
+    }
+
+    int ss=0;
+    public void StartOperation(){
+        draw_board.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int posX=(e.getX()-OFFSET_W)/UNIT_SIZE+1;
+                int posY=(e.getY()-OFFSET_H)/UNIT_SIZE+1;
+                if ((posX<=9&&posX>0)||(posY<=10&&posY>0)) {
+                    if(aim_select.GetID()==NullPiece.ID&&now_select.GetID()==NullPiece.ID) {
+                        System.out.println("now");
+                        now_select = pieces_map[posX][posY];
+                        System.out.println(now_select.GetName()+ss);
+                        ss++;
+                    }
+                    else {
+                        System.out.println("aim");
+                        aim_select = pieces_map[posX][posY];
+                    }
+                    if(aim_select.GetID()!=NullPiece.ID)
+                        Judge.getNow_player().MakeChoice(Judge.C_GO);
+                }
+            }
+        });
+
+        draw_board.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                if(aim_select.GetID()==NullPiece.ID&&now_select.GetID()!=NullPiece.ID) {
+                    System.out.println(aim_select.GetID());
+                    UpdateFrames();
+                    game_image.getGraphics().drawImage(now_select.GetImage(), e.getX()-UNIT_SIZE/2, e.getY()-UNIT_SIZE/2, null);
+                    draw_board.repaint();
+                }
+            }
+        });
+
 
     }
 

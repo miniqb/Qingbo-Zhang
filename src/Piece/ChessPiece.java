@@ -31,7 +31,7 @@ public class ChessPiece implements Piece{
     private final Point position;
     private final String name;
     private final byte group;
-    private final byte ID;
+    public final byte ID;
     private final BufferedImage image;
     //private boolean selected = false;
 
