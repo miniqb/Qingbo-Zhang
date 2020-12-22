@@ -1,6 +1,6 @@
 package Player;
 
-public class ChessPlayer {
+public class ChessPlayer implements Player{
     private byte group;
     private byte choice;
 

@@ -60,4 +60,7 @@ public class NullPiece implements Piece{
     public boolean IsAllowedAimPosition(Point pos) {
         return false;
     }
+
+    @Override
+    public void SetAlive(boolean b) {}
 }

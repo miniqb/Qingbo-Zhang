@@ -33,6 +33,7 @@ public class ChessPiece implements Piece{
     private final byte group;
     public final byte ID;
     private final BufferedImage image;
+    private boolean alive=true;
     //private boolean selected = false;
 
     public ChessPiece(String name,byte ID,Point pos) {
@@ -160,7 +161,7 @@ public class ChessPiece implements Piece{
 
     @Override
     public boolean IsAlive() {
-        return true;
+        return alive;
     }
 
     @Override
@@ -172,4 +173,11 @@ public class ChessPiece implements Piece{
     public boolean IsAllowedAimPosition(Point pos) {
         return true;
     }
+
+    @Override
+    public void SetAlive(boolean b) {
+        alive=b;
+    }
+
+
 }
