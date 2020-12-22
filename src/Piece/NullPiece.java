@@ -1,19 +1,31 @@
 package Piece;
 
+import Board.ChessBoard;
 import Judge.Judge;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class NullPiece implements Piece{
+    private final static NullPiece[][] null_map = new NullPiece[ChessBoard.WIDTH+1][ChessBoard.HIGH+1];
+    static {
+        for (int i = 0; i < null_map.length; i++) {
+            for (int j = 0; j < null_map[i].length; j++) {
+                null_map[i][j]=new NullPiece(i,j);
+            }
+        }
+    }
     private final Point position;
     public final static String NAME = "Null";
     public final static byte ID = 0;
 
-    public NullPiece() {
+    private NullPiece() {
         position=new Point(0,0);
     }
-    public NullPiece(int x,int y) {
+    private NullPiece(int x,int y) {
         position=new Point(x,y);
+    }
+    public static Piece GetNull(int x,int y){
+        return null_map[x][y];
     }
     @Override
     public void Move(int x,int y) {
@@ -22,8 +34,8 @@ public class NullPiece implements Piece{
     }
 
     @Override
-    public BufferedImage GetImage() {
-        return null;
+    public BufferedImage[] GetImage() {
+        return new BufferedImage[3];
     }
 
     @Override

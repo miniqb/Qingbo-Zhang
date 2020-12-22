@@ -13,6 +13,65 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 
 public class ChessGame {
+
+    private final MouseAdapter mouse_click_play=new MouseAdapter() {
+        @Override
+        public void mousePressed(MouseEvent e) {
+            int posX=(int)((double)(e.getX()-OFFSET_W)/UNIT_SIZE+1);
+            int posY=(int)((double)(e.getY()-OFFSET_H)/UNIT_SIZE+1);
+            if ( posX<=9 && posX>0 && posY<=10 && posY>0 ) {
+                if(board.GetAimSelect().GetID()==NullPiece.ID && board.GetNowSelect().GetID()==NullPiece.ID) {//如果当前未选择任何有效棋子则选中该棋子
+                    board.SetNowSelect(posX,posY);
+                    System.out.println(board.GetNowSelect().GetName());
+                    if(board.GetNowSelect().GetGroup()!=Judge.GetNowPlayer().GetGroup()) {//如果选择了对方棋子则重置选择
+                        board.ResetSelect();
+                    }
+                }
+                else if(board.GetAimSelect().GetID()==NullPiece.ID && board.GetNowSelect().GetID()!=NullPiece.ID){//如果已选择有效棋子且未选择目标位置
+                    board.SetAimSelect(posX,posY);
+                    Judge.GetNowPlayer().MakeChoice(Judge.C_GO);
+                    if(ChoiceJudge.Init().DoJudge()){
+                        board.MovePiece();
+                    }
+                    board.ResetSelect();
+                    UpdateFrames();
+                    draw_board.repaint();
+                }
+            }
+            else{
+                board.ResetSelect();
+                UpdateFrames();
+                draw_board.repaint();
+            }
+            if(ResultJudge.Init().DoJudge()){
+                String name=Judge.getWinner().GetGroup()==Judge.G_HAN?"汉":"楚";
+                System.out.println(name+"获胜");
+                draw_board.removeMouseListener(this);
+                //System.exit(0);
+            }
+        }
+
+    };//下棋时的监听器
+
+    private final MouseMotionAdapter mouse_move_play=new MouseMotionAdapter() {
+        private void MoveAndDrag(MouseEvent e) {
+            if(board.GetAimSelect().GetID()==NullPiece.ID && board.GetNowSelect().GetID()!=NullPiece.ID) {
+                System.out.println(3);
+                UpdateFrames();
+                game_image.getGraphics().drawImage(board.GetNowSelect().GetImage()[0], e.getX()-UNIT_SIZE/2, e.getY()-UNIT_SIZE/2, null);
+                draw_board.repaint();
+            }
+        }
+        @Override
+        public void mouseDragged(MouseEvent e) {
+            MoveAndDrag(e);
+        }
+        @Override
+        public void mouseMoved(MouseEvent e) {
+            MoveAndDrag(e);
+        }
+    };//下棋时的监听器
+
     private final int UNIT_SIZE = 67;
     private final int WIDTH_SIZE;
     private final int HIGH_SIZE;
@@ -30,6 +89,7 @@ public class ChessGame {
     private final ChessBoard board=ChessBoard.Init();
 
     public ChessGame(){
+
         player_1=new ChessPlayer();
         player_2=new ChessPlayer();
 
@@ -46,66 +106,38 @@ public class ChessGame {
         game_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         game_frame.setVisible(true);
     }
-    void StartGame(){
-        player_1.SetGroup(Judge.G_CHU);
-        player_2.SetGroup(Judge.G_HAN);
-        Judge.SetPlayers(player_1,player_2);
 
+    public void StartGame(){
+        player_1.SetGroup(Judge.G_HAN);
+        player_2.SetGroup(Judge.G_CHU);
+        Judge.SetPlayers(player_1,player_2);
         StartOperation();
 
     }
+
     public void UpdateFrames(){
         Graphics game_imageGraphics=game_image.getGraphics();
         game_imageGraphics.drawImage(board.GetBoardImage(),0,0,null);
         for (Piece piece:board.GetAllPieces()) {
-            if (piece.IsAlive()&&piece!=board.GetNowSelect()) {
+            if (piece.IsAlive()) {
                 int posX=(piece.GetPosition().x-1) * UNIT_SIZE+OFFSET_W;
                 int posY=(piece.GetPosition().y-1) * UNIT_SIZE+OFFSET_H;
-                game_imageGraphics.drawImage(piece.GetImage(),posX,posY,null);
+                if(piece!=board.GetNowSelect())
+                    game_imageGraphics.drawImage(piece.GetImage()[0],posX,posY,null);
+                else
+                    game_imageGraphics.drawImage(piece.GetImage()[1],posX,posY,null);
             }
         }
     }
+
     public void StartOperation(){
-        draw_board.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
+        draw_board.addMouseListener(mouse_click_play);
 
-                int posX=(int)((double)(e.getX()-OFFSET_W)/UNIT_SIZE+1);
-                int posY=(int)((double)(e.getY()-OFFSET_H)/UNIT_SIZE+1);
-                if ( posX<=9 && posX>0 && posY<=10 && posY>0 ) {
-                    System.out.printf("%d %d\n",(e.getX()-OFFSET_W)/UNIT_SIZE,(e.getY()-OFFSET_H)/UNIT_SIZE);
-                    if(ChoiceJudge.Init().DoJudge()){
-
-                    }
-                    if(board.GetAimSelect().GetID()==NullPiece.ID && board.GetNowSelect().GetID()==NullPiece.ID) {//如果当前未选择
-                        board.SetNowSelect(posX,posY);
-                        System.out.println(board.GetNowSelect().GetName());
-                    }
-                    else {
-                        board.SetAimSelect(posX,posY);
-                        Judge.GetNowPlayer().MakeChoice(Judge.C_GO);
-                        if(ChoiceJudge.Init().DoJudge()){
-                            board.MovePieces();
-                        }
-                    }
-                }
-            }
-        });
-
-        draw_board.addMouseMotionListener(new MouseMotionAdapter() {
-            @Override
-            public void mouseMoved(MouseEvent e) {
-                if(board.GetAimSelect().GetID()==NullPiece.ID && board.GetNowSelect().GetID()!=NullPiece.ID) {
-                    System.out.println(board.GetAimSelect().GetID());
-                    UpdateFrames();
-                    game_image.getGraphics().drawImage(board.GetNowSelect().GetImage(), e.getX()-UNIT_SIZE/2, e.getY()-UNIT_SIZE/2, null);
-                    draw_board.repaint();
-                }
-            }
-        });
+        draw_board.addMouseMotionListener(mouse_move_play);
 
 
     }
+
     class DrawBoard extends JPanel{
         @Override
         public void paint(Graphics g) {

@@ -20,7 +20,7 @@ public class ChessBoard {
     };
     public final static byte WIDTH = 9; //棋盘宽度
     public final static byte HIGH = 10; //棋盘高度
-    public final static Piece Null = new NullPiece(0,0);
+    public final static Piece Null = NullPiece.GetNull(0,0);
 
     private final Piece[][] pieces_map; //棋盘数组
     private final Piece[] pieces_all; //棋子容器
@@ -111,7 +111,7 @@ public class ChessBoard {
             }
             for (int i = 0; i <= WIDTH; i++) { //在棋盘上摆上”空子“
                 for (int j = 0; j <= HIGH; j++) {
-                    pieces_map[i][j] = pieces_all[0];
+                    pieces_map[i][j] = NullPiece.GetNull(i,j);
                 }
             }
             for (int i = 1; i < pieces_all.length; i++) { //在棋盘上摆子
@@ -123,10 +123,6 @@ public class ChessBoard {
 
     public Piece GetPiece(int x,int y){
         return pieces_map[x][y];
-    }
-
-    public void MovePiece(){
-
     }
 
     public BufferedImage GetBoardImage(){
@@ -153,7 +149,17 @@ public class ChessBoard {
         aim_select=pieces_map[x][y];
     }
 
-    public void MovePieces(){
+    public void MovePiece(){
+        aim_select.SetAlive(false);
+        Point pos_aim=aim_select.GetPosition();
+        Point pos_now=now_select.GetPosition();
+        pieces_map[pos_aim.x][pos_aim.y]=now_select;
+        pieces_map[pos_now.x][pos_now.y]=NullPiece.GetNull(pos_now.x,pos_now.y);
+        now_select.Move(pos_aim.x,pos_aim.y);
+    }
 
+    public void ResetSelect(){
+        now_select=Null;
+        aim_select=Null;
     }
 }

@@ -10,11 +10,11 @@ public abstract class Judge {
     public final static byte C_RETRACT = 2;     //悔棋
     public final static byte C_GIVE_UP = 3;     //认输
     public final static byte THINKING = 0;      //思考ing
-    private static Player winner;               //赢家
-    private static Player loser;                //输家
-    private static Player player_now;           //当前行动方
-    private static Player player_1;
-    private static Player player_2;
+    protected static Player winner;               //赢家
+    protected static Player loser;                //输家
+    protected static Player player_now;           //当前行动方
+    protected static Player player_1;
+    protected static Player player_2;
 
     public abstract boolean DoJudge();          //对选择的合法性做出判断，同时可以进行一些操作
 
@@ -33,7 +33,7 @@ public abstract class Judge {
     public static void SetPlayers(Player p1,Player p2) {
         player_1=p1;
         player_2=p2;
-        if(player_1.GetGroup()==G_CHU)
+        if(player_1.GetGroup()==G_HAN)
             player_now=player_1;
         else
             player_now=player_2;
