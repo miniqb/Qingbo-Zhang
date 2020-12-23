@@ -22,10 +22,13 @@ public class ChessGame {
             if ( posX<=9 && posX>0 && posY<=10 && posY>0 ) {
                 if(board.GetAimSelect().GetID()==NullPiece.ID && board.GetNowSelect().GetID()==NullPiece.ID) {//如果当前未选择任何有效棋子则选中该棋子
                     board.SetNowSelect(posX,posY);
-                    System.out.println(board.GetNowSelect().GetName());
                     if(board.GetNowSelect().GetGroup()!=Judge.GetNowPlayer().GetGroup()) {//如果选择了对方棋子则重置选择
                         board.ResetSelect();
                     }
+                    //点击时将棋子移动到合适位置，增强观感
+                    UpdateFrames();
+                    game_image.getGraphics().drawImage(board.GetNowSelect().GetImage()[0], e.getX()-UNIT_SIZE/2, e.getY()-UNIT_SIZE/2, null);
+                    draw_board.repaint();
                 }
                 else if(board.GetAimSelect().GetID()==NullPiece.ID && board.GetNowSelect().GetID()!=NullPiece.ID){//如果已选择有效棋子且未选择目标位置
                     board.SetAimSelect(posX,posY);
@@ -54,10 +57,14 @@ public class ChessGame {
     };//下棋时的监听器
 
     private final MouseMotionAdapter mouse_move_play=new MouseMotionAdapter() {
+
         private void MoveAndDrag(MouseEvent e) {
+            int posX=(int)((double)(e.getX()-OFFSET_W)/UNIT_SIZE+1);
+            int posY=(int)((double)(e.getY()-OFFSET_H)/UNIT_SIZE+1);
             if(board.GetAimSelect().GetID()==NullPiece.ID && board.GetNowSelect().GetID()!=NullPiece.ID) {
-                System.out.println(3);
                 UpdateFrames();
+                if(ThinkingJudge.Init().DoJudge()&&( posX<=9 && posX>0 && posY<=10 && posY>0 ))
+                    game_image.getGraphics().drawImage(board.GetNowSelect().GetImage()[2],(posX-1)*UNIT_SIZE+OFFSET_W,(posY-1)*UNIT_SIZE+OFFSET_H,null );
                 game_image.getGraphics().drawImage(board.GetNowSelect().GetImage()[0], e.getX()-UNIT_SIZE/2, e.getY()-UNIT_SIZE/2, null);
                 draw_board.repaint();
             }

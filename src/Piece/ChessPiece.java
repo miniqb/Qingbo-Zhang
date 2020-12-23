@@ -10,8 +10,9 @@ import java.io.File;
 import java.io.IOException;
 
 public class ChessPiece implements Piece{
-    public final static BufferedImage[] pieces_images=new BufferedImage[14];
-    public final static BufferedImage[] pieces_select_images=new BufferedImage[14];
+    public final static BufferedImage[] pieces_images=new BufferedImage[15];
+    public final static BufferedImage[] pieces_select_images=new BufferedImage[15];
+    public final static BufferedImage[] pieces_pre_images=new BufferedImage[15];
     public final static String P_JIANG_CHU = "将";
     public final static String P_SHI_CHU = "士";
     public final static String P_XIANG_CHU = "象";
@@ -41,83 +42,77 @@ public class ChessPiece implements Piece{
         this.name=name;
         this.ID=ID;
         this.position=pos;
+        
+        int subscript;
         switch (name) {
             case P_BING_HAN -> {
-                this.image[0] = pieces_images[0];
-                this.image[1] = pieces_select_images[0];
+                subscript=0;
                 this.group = Judge.G_HAN;
             }
             case P_CHE_HAN -> {
-                this.image[0] = pieces_images[1];
-                this.image[1] = pieces_select_images[1];
+                subscript=1;
                 this.group = Judge.G_HAN;
             }
             case P_JIANG_CHU -> {
-                this.image[0] = pieces_images[2];
-                this.image[1] = pieces_select_images[2];
+                subscript=2;
                 this.group = Judge.G_CHU;
             }
             case P_JU_CHU -> {
-                this.image[0] = pieces_images[3];
-                this.image[1] = pieces_select_images[3];
+                subscript=3;
                 this.group = Judge.G_CHU;
             }
             case P_MA_CHU -> {
-                this.image[0] = pieces_images[4];
-                this.image[1] = pieces_select_images[4];
+                subscript=4;
                 this.group = Judge.G_CHU;
             }
             case P_MA_HAN -> {
-                this.image[0] = pieces_images[5];
-                this.image[1] = pieces_select_images[5];
+                subscript=5;
                 this.group = Judge.G_HAN;
             }
             case P_PAO_CHU -> {
-                this.image[0] = pieces_images[6];
-                this.image[1] = pieces_select_images[6];
+                subscript=6;
                 this.group = Judge.G_CHU;
             }
             case P_PAO_HAN -> {
-                this.image[0] = pieces_images[7];
-                this.image[1] = pieces_select_images[7];
+                subscript=7;
                 this.group = Judge.G_HAN;
             }
             case P_SHI_CHU -> {
-                this.image[0] = pieces_images[8];
-                this.image[1] = pieces_select_images[8];
+                subscript=8;
                 this.group = Judge.G_CHU;
             }
             case P_SHI_HAN -> {
-                this.image[0] = pieces_images[9];
-                this.image[1] = pieces_select_images[9];
+                subscript=9;
                 this.group = Judge.G_HAN;
             }
             case P_SHUAI_HAN -> {
-                this.image[0] = pieces_images[10];
-                this.image[1] = pieces_select_images[10];
+                subscript=10;
                 this.group = Judge.G_HAN;
             }
             case P_XIANG_CHU -> {
-                this.image[0] = pieces_images[11];
-                this.image[1] = pieces_select_images[11];
+                subscript=11;
                 this.group = Judge.G_CHU;
             }
             case P_XIANG_HAN -> {
-                this.image[0] = pieces_images[12];
-                this.image[1] = pieces_select_images[12];
+                subscript=12;
                 this.group = Judge.G_HAN;
             }
             case P_ZU_CHU -> {
-                this.image[0] = pieces_images[13];
-                this.image[1] = pieces_select_images[13];
+                subscript=13;
                 this.group = Judge.G_CHU;
             }
             default -> {
-                this.image[0] = null;
-                this.image[1] = null;
+                subscript=14;
                 this.group = Judge.G_NULL;
             }
         }
+        RegisterImages(subscript);
+    }
+
+    private void RegisterImages(int n){
+        this.image[0] = pieces_images[n];
+        this.image[1] = pieces_select_images[n];
+        this.image[2] = pieces_pre_images[n];
     }
 
     private void LoadImages(){
@@ -151,6 +146,21 @@ public class ChessPiece implements Piece{
             pieces_select_images[11]=ImageIO.read(new File("image/p_xiang_chu_1.png"));
             pieces_select_images[12]=ImageIO.read(new File("image/p_xiang_han_1.png"));
             pieces_select_images[13]=ImageIO.read(new File("image/p_zu_chu_1.png"));
+
+            pieces_pre_images[0]=ImageIO.read(new File("image/p_bing_han_2.png"));
+            pieces_pre_images[1]=ImageIO.read(new File("image/p_che_han_2.png"));
+            pieces_pre_images[2]=ImageIO.read(new File("image/p_jiang_chu_2.png"));
+            pieces_pre_images[3]=ImageIO.read(new File("image/p_ju_chu_2.png"));
+            pieces_pre_images[4]=ImageIO.read(new File("image/p_ma_chu_2.png"));
+            pieces_pre_images[5]=ImageIO.read(new File("image/p_ma_han_2.png"));
+            pieces_pre_images[6]=ImageIO.read(new File("image/p_pao_chu_2.png"));
+            pieces_pre_images[7]=ImageIO.read(new File("image/p_pao_han_2.png"));
+            pieces_pre_images[8]=ImageIO.read(new File("image/p_shi_chu_2.png"));
+            pieces_pre_images[9]=ImageIO.read(new File("image/p_shi_han_2.png"));
+            pieces_pre_images[10]=ImageIO.read(new File("image/p_shuai_han_2.png"));
+            pieces_pre_images[11]=ImageIO.read(new File("image/p_xiang_chu_2.png"));
+            pieces_pre_images[12]=ImageIO.read(new File("image/p_xiang_han_2.png"));
+            pieces_pre_images[13]=ImageIO.read(new File("image/p_zu_chu_2.png"));
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("读取图片异常！");
@@ -158,6 +168,7 @@ public class ChessPiece implements Piece{
         }
 
     }
+
     @Override
     public void Move(int x,int y) {
         position.x=x;
@@ -208,6 +219,5 @@ public class ChessPiece implements Piece{
     public void SetAlive(boolean b) {
         alive=b;
     }
-
 
 }

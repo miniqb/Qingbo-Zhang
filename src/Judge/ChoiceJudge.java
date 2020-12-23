@@ -20,8 +20,6 @@ public class ChoiceJudge extends Judge{
             case C_GO:
                 if(board.GetAimSelect()==board.GetNowSelect())
                     result=false;
-
-
         }
         if(result) {
             player_now=player_now==player_1?player_2:player_1;

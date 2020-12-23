@@ -11,6 +11,6 @@ public class ThinkingJudge extends Judge{
     private ThinkingJudge(){}
     @Override
     public boolean DoJudge() {
-        return false;
+        return true;
     }
 }
