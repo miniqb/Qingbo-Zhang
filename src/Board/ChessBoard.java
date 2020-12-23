@@ -28,6 +28,7 @@ public class ChessBoard {
     private Piece aim_piece_chu;
     private Piece now_piece_han;
     private Piece aim_piece_han;
+    public final Point moving=new Point(0,0);
     private Piece now_select;
     private Piece aim_select;
 
@@ -161,5 +162,17 @@ public class ChessBoard {
     public void ResetSelect(){
         now_select=Null;
         aim_select=Null;
+    }
+
+    public Piece[][] GetPiecesMap(){
+        return pieces_map;
+    }
+
+    public Piece GetJiang(){
+        return pieces_all[25];
+    }
+
+    public Piece GetShuai(){
+        return pieces_all[9];
     }
 }

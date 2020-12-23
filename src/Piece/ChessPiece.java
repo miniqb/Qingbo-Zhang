@@ -29,6 +29,7 @@ public class ChessPiece implements Piece{
     public final static String P_PAO_HAN = "炮";
     public final static String P_BING_HAN = "兵";
 
+    private final Point[] can_go;
     private final Point position;
     private final String name;
     private final byte group;
@@ -48,63 +49,81 @@ public class ChessPiece implements Piece{
             case P_BING_HAN -> {
                 subscript=0;
                 this.group = Judge.G_HAN;
+                can_go=new Point[4];
             }
             case P_CHE_HAN -> {
                 subscript=1;
                 this.group = Judge.G_HAN;
+                can_go=new Point[34];
             }
             case P_JIANG_CHU -> {
                 subscript=2;
                 this.group = Judge.G_CHU;
+                can_go=new Point[4];
             }
             case P_JU_CHU -> {
                 subscript=3;
                 this.group = Judge.G_CHU;
+                can_go=new Point[34];
             }
             case P_MA_CHU -> {
                 subscript=4;
                 this.group = Judge.G_CHU;
+                can_go=new Point[8];
             }
             case P_MA_HAN -> {
                 subscript=5;
                 this.group = Judge.G_HAN;
+                can_go=new Point[8];
             }
             case P_PAO_CHU -> {
                 subscript=6;
                 this.group = Judge.G_CHU;
+                can_go=new Point[34];
             }
             case P_PAO_HAN -> {
                 subscript=7;
                 this.group = Judge.G_HAN;
+                can_go=new Point[34];
             }
             case P_SHI_CHU -> {
                 subscript=8;
                 this.group = Judge.G_CHU;
+                can_go=new Point[4];
             }
             case P_SHI_HAN -> {
                 subscript=9;
                 this.group = Judge.G_HAN;
+                can_go=new Point[4];
             }
             case P_SHUAI_HAN -> {
                 subscript=10;
                 this.group = Judge.G_HAN;
+                can_go=new Point[4];
             }
             case P_XIANG_CHU -> {
                 subscript=11;
                 this.group = Judge.G_CHU;
+                can_go=new Point[4];
             }
             case P_XIANG_HAN -> {
                 subscript=12;
                 this.group = Judge.G_HAN;
+                can_go=new Point[4];
             }
             case P_ZU_CHU -> {
                 subscript=13;
                 this.group = Judge.G_CHU;
+                can_go=new Point[4];
             }
             default -> {
                 subscript=14;
                 this.group = Judge.G_NULL;
+                can_go=new Point[1];
             }
+        }
+        for (int i = 0; i < can_go.length; i++) {
+            can_go[i]=new Point();
         }
         RegisterImages(subscript);
     }
@@ -173,6 +192,7 @@ public class ChessPiece implements Piece{
     public void Move(int x,int y) {
         position.x=x;
         position.y=y;
+        CountCanGo();
     }
 
     @Override
@@ -220,4 +240,72 @@ public class ChessPiece implements Piece{
         alive=b;
     }
 
+    @Override
+    public Point[] GetCanGo() {
+        return can_go;
+    }
+
+    private void CountCanGo(){
+        int poX=position.x;
+        int poY=position.y;
+        switch (name){
+            case P_BING_HAN:
+            case P_JIANG_CHU:
+            case P_SHUAI_HAN:
+            case P_ZU_CHU:
+                can_go[0].setLocation(poX+1,poY);
+                can_go[1].setLocation(poX-1,poY);
+                can_go[2].setLocation(poX,poY+1);
+                can_go[3].setLocation(poX,poY-1);
+                break;
+            case P_MA_CHU:
+            case P_MA_HAN:
+                can_go[0].setLocation(poX+1,poY+2);
+                can_go[1].setLocation(poX-1,poY+2);
+                can_go[2].setLocation(poX+1,poY-2);
+                can_go[3].setLocation(poX-1,poY-2);
+                can_go[4].setLocation(poX+2,poY+1);
+                can_go[5].setLocation(poX-2,poY+1);
+                can_go[6].setLocation(poX+2,poY-1);
+                can_go[7].setLocation(poX-1,poY-1);
+                break;
+            case P_XIANG_CHU:
+            case P_XIANG_HAN:
+                can_go[0].setLocation(poX+2,poY+2);
+                can_go[1].setLocation(poX-2,poY-2);
+                can_go[2].setLocation(poX+2,poY-2);
+                can_go[3].setLocation(poX-2,poY+2);
+                break;
+            case P_SHI_CHU:
+            case P_SHI_HAN:
+                can_go[0].setLocation(poX+1,poY+1);
+                can_go[1].setLocation(poX-1,poY-1);
+                can_go[2].setLocation(poX-1,poY+1);
+                can_go[3].setLocation(poX+1,poY-1);
+                break;
+            case P_JU_CHU:
+            case P_CHE_HAN:
+            case P_PAO_CHU:
+            case P_PAO_HAN:
+                int i=-8,j=0;
+                while (i<ChessBoard.WIDTH){
+                    if(i!=0){
+                        can_go[j].setLocation(poX+i,poY);
+                        j++;
+                    }
+                    i++;
+                }
+                i=-9;
+                while (i<ChessBoard.HIGH){
+                    if(i!=0){
+                        can_go[j].setLocation(poX,poY+i);
+                        j++;
+                    }
+                    i++;
+                }
+                break;
+            default:
+                break;
+        }
+    }
 }

@@ -14,4 +14,5 @@ public interface Piece {
     boolean IsSelected();      //是否被选中
     boolean IsAllowedAimPosition(Point pos);         //是否是被允许的目标位置
     void SetAlive(boolean b);
+    Point[] GetCanGo();
 }

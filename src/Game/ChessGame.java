@@ -62,8 +62,9 @@ public class ChessGame {
             int posX=(int)((double)(e.getX()-OFFSET_W)/UNIT_SIZE+1);
             int posY=(int)((double)(e.getY()-OFFSET_H)/UNIT_SIZE+1);
             if(board.GetAimSelect().GetID()==NullPiece.ID && board.GetNowSelect().GetID()!=NullPiece.ID) {
+                board.moving.setLocation(posX,posY);
                 UpdateFrames();
-                if(ThinkingJudge.Init().DoJudge()&&( posX<=9 && posX>0 && posY<=10 && posY>0 ))
+                if(( posX<=9 && posX>0 && posY<=10 && posY>0 )&&ThinkingJudge.Init().DoJudge())
                     game_image.getGraphics().drawImage(board.GetNowSelect().GetImage()[2],(posX-1)*UNIT_SIZE+OFFSET_W,(posY-1)*UNIT_SIZE+OFFSET_H,null );
                 game_image.getGraphics().drawImage(board.GetNowSelect().GetImage()[0], e.getX()-UNIT_SIZE/2, e.getY()-UNIT_SIZE/2, null);
                 draw_board.repaint();

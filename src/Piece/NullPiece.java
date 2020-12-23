@@ -75,4 +75,9 @@ public class NullPiece implements Piece{
 
     @Override
     public void SetAlive(boolean b) {}
+
+    @Override
+    public Point[] GetCanGo() {
+        return null;
+    }
 }
