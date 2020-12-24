@@ -4,7 +4,6 @@ import Board.ChessBoard;
 import Piece.*;
 
 import java.awt.*;
-import java.util.Objects;
 
 public class ThinkingJudge extends Judge{
     private static ThinkingJudge me;
@@ -21,6 +20,7 @@ public class ThinkingJudge extends Judge{
         Piece now=ChessBoard.Init().GetNowSelect();
         Piece aim=ChessBoard.Init().GetPiece(move_now.x,move_now.y);
         Point[] can_go= now.GetCanGo();
+        boolean result=false;
         for (Point p:can_go) {
             if(p.equals(move_now)){
                 if(now.GetGroup()==aim.GetGroup())
@@ -29,12 +29,8 @@ public class ThinkingJudge extends Judge{
                 switch (now.GetName()){
                     case ChessPiece.P_PAO_HAN:
                     case ChessPiece.P_PAO_CHU:
-                        if(sum==0&&aim.GetID()==NullPiece.ID)
-                            return true;
-                        if(sum==1){
-                            if(aim.GetID()!=NullPiece.ID)
-                                return true;
-                        }
+                        if((sum==0&&aim.GetID()==NullPiece.ID)||(sum==1&&aim.GetID()!=NullPiece.ID))
+                            result = true;
                         break;
                     case ChessPiece.P_CHE_HAN:
                     case ChessPiece.P_JU_CHU:
@@ -43,17 +39,19 @@ public class ThinkingJudge extends Judge{
                     case ChessPiece.P_MA_CHU:
                     case ChessPiece.P_MA_HAN:
                         if(sum==0)
-                            return true;
+                            result = true;
                         break;
                     case ChessPiece.P_BING_HAN:
                     case ChessPiece.P_ZU_CHU:
+                        System.out.println(now.GetGroup());
+                        System.out.println(Judge.GetHome());
                         if(now.GetGroup()==Judge.GetHome()){
-                            if(move_now.y-aim.GetPosition().y==-1||(move_now.y<6)&&Math.abs(move_now.x-aim.GetPosition().x)==1)
-                                return true;
+                            if(now.GetPosition().y-move_now.y==1||(now.GetPosition().y<6)&&Math.abs(now.GetPosition().x-move_now.x)==1)
+                                result = true;
                         }
                         else
-                            if(move_now.y-aim.GetPosition().y==1||(move_now.y>5)&&Math.abs(move_now.x-aim.GetPosition().x)==1)
-                                return true;
+                            if(now.GetPosition().y-move_now.y==-1||(now.GetPosition().y>5)&&Math.abs(now.GetPosition().x-move_now.x)==1)
+                                result = true;
                         break;
                     case ChessPiece.P_JIANG_CHU:
                     case ChessPiece.P_SHUAI_HAN:
@@ -61,11 +59,11 @@ public class ThinkingJudge extends Judge{
                         int tmpY=aim.GetPosition().y;
                         if(now.GetGroup()==Judge.GetHome()) {
                             if (tmpY>=8 && tmpX>=4 && tmpX<=6 && sum>0)
-                                return true;
+                                result = true;
                         }
                         else
                             if(tmpY<=3 && tmpX>=4 && tmpX<=6 && sum>0)
-                                return true;
+                                result = true;
                             break;
                     case ChessPiece.P_SHI_CHU:
                     case ChessPiece.P_SHI_HAN:
@@ -73,18 +71,19 @@ public class ThinkingJudge extends Judge{
                         tmpY=aim.GetPosition().y;
                         if(now.GetGroup()==Judge.GetHome()) {
                             if (tmpY>=8 && tmpX>=4 && tmpX<=6)
-                                return true;
+                                result = true;
                         }
                         else
-                        if(tmpY<=3 && tmpX>=4 && tmpX<=6)
-                            return true;
+                            if(tmpY<=3 && tmpX>=4 && tmpX<=6)
+                                result = true;
                         break;
                     default:
-                        return false;
+                        break;
                 }
             }
         }
-        return false;
+        is_right_position=result;
+        return result;
     }
 
     private int HaveTunnel(Point now,Point aim){
@@ -96,15 +95,16 @@ public class ThinkingJudge extends Judge{
             case ChessPiece.P_CHE_HAN:
                 int max = Math.max(now.x, aim.x);
                 int min = Math.min(now.x, aim.x);
-                for (int x = min; x < max; x++) {
+                for (int x = min+1; x < max; x++) {
                     if(ChessBoard.Init().GetPiece(x,now.y).GetID()!=NullPiece.ID)
                         sum++;
                 }
                 max = Math.max(now.y, aim.y);
                 min = Math.min(now.y, aim.y);
-                for (int y = min; y < max; y++) {
-                    if(ChessBoard.Init().GetPiece(now.x,y).GetID()!=NullPiece.ID)
+                for (int y = min+1; y < max; y++) {
+                    if(ChessBoard.Init().GetPiece(now.x,y).GetID()!=NullPiece.ID){
                         sum++;
+                    }
                 }
                 break;
             case ChessPiece.P_XIANG_CHU:
@@ -116,21 +116,27 @@ public class ThinkingJudge extends Judge{
             case ChessPiece.P_MA_HAN:
                 if(Math.abs(now.x-aim.x)==2 && ChessBoard.Init().GetPiece((now.x+aim.x)/2,now.y).GetID()!=NullPiece.ID)
                     sum++;
-                else if(ChessBoard.Init().GetPiece(now.x,(now.y+aim.y)/2).GetID()!=NullPiece.ID)
+                else if(Math.abs(now.y-aim.y)==2&&ChessBoard.Init().GetPiece(now.x,(now.y+aim.y)/2).GetID()!=NullPiece.ID)
                     sum++;
                 break;
             case ChessPiece.P_JIANG_CHU:
             case ChessPiece.P_SHUAI_HAN:
-                Point tmp1=ChessBoard.Init().GetJiang().GetPosition();
-                Point tmp2=ChessBoard.Init().GetShuai().GetPosition();
-                if(tmp1.x==tmp2.x){
-                    max=Math.max(tmp1.y,tmp2.y);
-                    min=Math.min(tmp1.y,tmp2.y);
+                Point head=
+                        ChessBoard.Init().GetPiece(now.x,now.y).GetName().equals(ChessPiece.P_SHUAI_HAN)?
+                        ChessBoard.Init().GetJiang().GetPosition():
+                        ChessBoard.Init().GetShuai().GetPosition();
+                if(head.x==aim.x){
+                    max=Math.max(aim.y,head.y);
+                    min=Math.min(aim.y,head.y);
                     for (int y = min+1; y < max; y++) {
-                        if(ChessBoard.Init().GetPiece(now.x,y).GetID()!=NullPiece.ID)
+                        if(ChessBoard.Init().GetPiece(aim.x,y).GetID()!=NullPiece.ID) {
                             sum++;
+                            break;
+                        }
                     }
                 }
+                else
+                    sum++;
                 break;
             default:
                 break;

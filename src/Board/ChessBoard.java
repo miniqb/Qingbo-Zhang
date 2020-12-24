@@ -32,8 +32,6 @@ public class ChessBoard {
     private Piece now_select;
     private Piece aim_select;
 
-    private byte last_home=Judge.G_NULL;
-
     private BufferedImage board_image;
 
     private ChessBoard(){
@@ -61,6 +59,10 @@ public class ChessBoard {
 
     public static ChessBoard Init(){
         if(me==null)
+            if(Judge.GetHome()==Judge.G_NULL){
+                System.out.println("玩家尚未分配阵营！");
+                System.exit(0);
+            }
             me=new ChessBoard();
         return me;
     }
@@ -103,10 +105,8 @@ public class ChessBoard {
     }
 
     public void InitializePieces(){
-        if(last_home!=Judge.GetHome()) {
-            last_home=Judge.GetHome();
-            int constantX = last_home == Judge.G_HAN ? WIDTH + 1 : 0;
-            int constantY = last_home == Judge.G_HAN ? HIGH + 1 : 0;
+            int constantX = Judge.GetHome() == Judge.G_CHU ? WIDTH + 1 : 0;
+            int constantY = Judge.GetHome() == Judge.G_CHU ? HIGH + 1 : 0;
             for (int i = 0; i < positions.length; i++) {
                 pieces_all[i].Move(Math.abs(constantX - positions[i][0]), Math.abs(constantY - positions[i][1]));
             }
@@ -120,7 +120,6 @@ public class ChessBoard {
                 pieces_map[temp.x][temp.y] = pieces_all[i];
             }
         }
-    }
 
     public Piece GetPiece(int x,int y){
         return pieces_map[x][y];

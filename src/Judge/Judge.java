@@ -3,6 +3,8 @@ package Judge;
 import Player.*;
 
 public abstract class Judge {
+    protected static boolean is_right_position=false;
+
     public final static byte G_NULL = 0;        //中间
     public final static byte G_CHU = 1;         //楚方
     public final static byte G_HAN = 2;         //汉方
@@ -41,7 +43,7 @@ public abstract class Judge {
 
     public static byte GetHome() {
         if(player_1==null)
-            return G_CHU;
+            return G_NULL;
         return player_1.GetGroup();
     }
 }

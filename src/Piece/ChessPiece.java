@@ -267,7 +267,7 @@ public class ChessPiece implements Piece{
                 can_go[4].setLocation(poX+2,poY+1);
                 can_go[5].setLocation(poX-2,poY+1);
                 can_go[6].setLocation(poX+2,poY-1);
-                can_go[7].setLocation(poX-1,poY-1);
+                can_go[7].setLocation(poX-2,poY-1);
                 break;
             case P_XIANG_CHU:
             case P_XIANG_HAN:

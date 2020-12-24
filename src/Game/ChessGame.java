@@ -94,12 +94,18 @@ public class ChessGame {
     private final ChessPlayer player_1;
     private final ChessPlayer player_2;
     private Judge judge;
-    private final ChessBoard board=ChessBoard.Init();
+    private final ChessBoard board;
 
     public ChessGame(){
 
         player_1=new ChessPlayer();
         player_2=new ChessPlayer();
+
+        player_1.SetGroup(Judge.G_HAN);
+        player_2.SetGroup(Judge.G_CHU);
+        Judge.SetPlayers(player_1,player_2);
+
+        board=ChessBoard.Init();
 
         WIDTH_SIZE=board.GetBoardImage().getWidth();
         HIGH_SIZE=board.GetBoardImage().getHeight();
@@ -116,9 +122,7 @@ public class ChessGame {
     }
 
     public void StartGame(){
-        player_1.SetGroup(Judge.G_HAN);
-        player_2.SetGroup(Judge.G_CHU);
-        Judge.SetPlayers(player_1,player_2);
+
         StartOperation();
 
     }
