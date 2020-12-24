@@ -58,12 +58,13 @@ public class ChessBoard {
     }
 
     public static ChessBoard Init(){
-        if(me==null)
-            if(Judge.GetHome()==Judge.G_NULL){
+        if(me==null) {
+            if (Judge.GetHome() == Judge.G_NULL) {
                 System.out.println("玩家尚未分配阵营！");
                 System.exit(0);
             }
-            me=new ChessBoard();
+            me = new ChessBoard();
+        }
         return me;
     }
 

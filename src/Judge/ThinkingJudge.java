@@ -43,8 +43,6 @@ public class ThinkingJudge extends Judge{
                         break;
                     case ChessPiece.P_BING_HAN:
                     case ChessPiece.P_ZU_CHU:
-                        System.out.println(now.GetGroup());
-                        System.out.println(Judge.GetHome());
                         if(now.GetGroup()==Judge.GetHome()){
                             if(now.GetPosition().y-move_now.y==1||(now.GetPosition().y<6)&&Math.abs(now.GetPosition().x-move_now.x)==1)
                                 result = true;
