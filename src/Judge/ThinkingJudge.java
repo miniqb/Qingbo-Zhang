@@ -21,62 +21,56 @@ public class ThinkingJudge extends Judge{
         Piece aim=ChessBoard.Init().GetPiece(move_now.x,move_now.y);
         Point[] can_go= now.GetCanGo();
         boolean result=false;
-        for (Point p:can_go) {
-            if(p.equals(move_now)){
-                if(now.GetGroup()==aim.GetGroup())
-                    break;
-                int sum=HaveTunnel(now.GetPosition(),aim.GetPosition());
-                switch (now.GetName()){
-                    case ChessPiece.P_PAO_HAN:
-                    case ChessPiece.P_PAO_CHU:
-                        if((sum==0&&aim.GetID()==NullPiece.ID)||(sum==1&&aim.GetID()!=NullPiece.ID))
-                            result = true;
-                        break;
-                    case ChessPiece.P_CHE_HAN:
-                    case ChessPiece.P_JU_CHU:
-                    case ChessPiece.P_XIANG_CHU:
-                    case ChessPiece.P_XIANG_HAN:
-                    case ChessPiece.P_MA_CHU:
-                    case ChessPiece.P_MA_HAN:
-                        if(sum==0)
-                            result = true;
-                        break;
-                    case ChessPiece.P_BING_HAN:
-                    case ChessPiece.P_ZU_CHU:
-                        if(now.GetGroup()==Judge.GetHome()){
-                            if(now.GetPosition().y-move_now.y==1||(now.GetPosition().y<6)&&Math.abs(now.GetPosition().x-move_now.x)==1)
-                                result = true;
-                        }
-                        else
-                            if(now.GetPosition().y-move_now.y==-1||(now.GetPosition().y>5)&&Math.abs(now.GetPosition().x-move_now.x)==1)
-                                result = true;
-                        break;
-                    case ChessPiece.P_JIANG_CHU:
-                    case ChessPiece.P_SHUAI_HAN:
-                        int tmpX=aim.GetPosition().x;
-                        int tmpY=aim.GetPosition().y;
-                        if(now.GetGroup()==Judge.GetHome()) {
-                            if (tmpY>=8 && tmpX>=4 && tmpX<=6 && sum>0)
-                                result = true;
-                        }
-                        else
-                            if(tmpY<=3 && tmpX>=4 && tmpX<=6 && sum>0)
+        if(now.GetGroup()!=aim.GetGroup()) {
+            for (Point p : can_go) {
+                if (p.equals(move_now)&&!WillHeadMeeting()) {
+                    int sum=HaveTunnel(now.GetPosition(),aim.GetPosition());
+                    switch (now.GetName()) {
+                        case ChessPiece.P_PAO_HAN:
+                        case ChessPiece.P_PAO_CHU:
+                            if ((sum == 0 && aim.GetID() == NullPiece.ID) || (sum == 1 && aim.GetID() != NullPiece.ID))
                                 result = true;
                             break;
-                    case ChessPiece.P_SHI_CHU:
-                    case ChessPiece.P_SHI_HAN:
-                        tmpX=aim.GetPosition().x;
-                        tmpY=aim.GetPosition().y;
-                        if(now.GetGroup()==Judge.GetHome()) {
-                            if (tmpY>=8 && tmpX>=4 && tmpX<=6)
+                        case ChessPiece.P_CHE_HAN:
+                        case ChessPiece.P_JU_CHU:
+                        case ChessPiece.P_XIANG_CHU:
+                        case ChessPiece.P_XIANG_HAN:
+                        case ChessPiece.P_MA_CHU:
+                        case ChessPiece.P_MA_HAN:
+                            if (sum == 0)
                                 result = true;
-                        }
-                        else
-                            if(tmpY<=3 && tmpX>=4 && tmpX<=6)
+                            break;
+                        case ChessPiece.P_BING_HAN:
+                        case ChessPiece.P_ZU_CHU:
+                            if (now.GetGroup() == Judge.GetHome()) {
+                                if (now.GetPosition().y - move_now.y == 1 || (now.GetPosition().y < 6) && Math.abs(now.GetPosition().x - move_now.x) == 1)
+                                    result = true;
+                            } else if (now.GetPosition().y - move_now.y == -1 || (now.GetPosition().y > 5) && Math.abs(now.GetPosition().x - move_now.x) == 1)
                                 result = true;
-                        break;
-                    default:
-                        break;
+                            break;
+                        case ChessPiece.P_JIANG_CHU:
+                        case ChessPiece.P_SHUAI_HAN:
+                            int tmpX = aim.GetPosition().x;
+                            int tmpY = aim.GetPosition().y;
+                            if (now.GetGroup() == Judge.GetHome()) {
+                                if (tmpY >= 8 && tmpX >= 4 && tmpX <= 6 && sum > 0)
+                                    result = true;
+                            } else if (tmpY <= 3 && tmpX >= 4 && tmpX <= 6 && sum > 0)
+                                result = true;
+                            break;
+                        case ChessPiece.P_SHI_CHU:
+                        case ChessPiece.P_SHI_HAN:
+                            tmpX = aim.GetPosition().x;
+                            tmpY = aim.GetPosition().y;
+                            if (now.GetGroup() == Judge.GetHome()) {
+                                if (tmpY >= 8 && tmpX >= 4 && tmpX <= 6)
+                                    result = true;
+                            } else if (tmpY <= 3 && tmpX >= 4 && tmpX <= 6)
+                                result = true;
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
         }
@@ -141,4 +135,51 @@ public class ThinkingJudge extends Judge{
         }
         return sum;
     }
+
+    private boolean WillHeadMeeting(){
+        Point move_now=ChessBoard.Init().moving;
+        Piece now=ChessBoard.Init().GetNowSelect();
+        Piece aim=ChessBoard.Init().GetPiece(move_now.x,move_now.y);
+        switch (now.GetName()){
+            case ChessPiece.P_JIANG_CHU:
+                if(move_now.x==ChessBoard.Init().GetShuai().GetPosition().x) {
+                    int maxY = Math.max(ChessBoard.Init().GetShuai().GetPosition().y, aim.GetPosition().y);
+                    int minY = Math.min(ChessBoard.Init().GetShuai().GetPosition().y, aim.GetPosition().y);
+                    for (int y = minY + 1; y < maxY; y++) {
+                        if (ChessBoard.Init().GetPiece(move_now.x, y).GetID() != NullPiece.ID)
+                            return false;
+                    }
+                }
+                else
+                    return false;
+                break;
+            case ChessPiece.P_SHUAI_HAN:
+                if(move_now.x==ChessBoard.Init().GetJiang().GetPosition().x) {
+                    int maxY = Math.max(ChessBoard.Init().GetJiang().GetPosition().y, aim.GetPosition().y);
+                    int minY = Math.min(ChessBoard.Init().GetJiang().GetPosition().y, aim.GetPosition().y);
+                    for (int y = minY + 1; y < maxY; y++) {
+                        if (ChessBoard.Init().GetPiece(move_now.x, y).GetID() != NullPiece.ID)
+                            return false;
+                    }
+                }
+                else
+                    return false;
+                break;
+            default:
+                if(ChessBoard.Init().GetShuai().GetPosition().x==ChessBoard.Init().GetJiang().GetPosition().x&&
+                        now.GetPosition().x==ChessBoard.Init().GetShuai().GetPosition().x&&now.GetPosition().x!=move_now.x){
+                    int maxY=Math.max(ChessBoard.Init().GetJiang().GetPosition().y,ChessBoard.Init().GetShuai().GetPosition().y);
+                    int minY=Math.min(ChessBoard.Init().GetJiang().GetPosition().y,ChessBoard.Init().GetShuai().GetPosition().y);
+                    for (int y = minY+1; y < maxY; y++) {
+                        if(ChessBoard.Init().GetPiece(now.GetPosition().x,y).GetID()!=NullPiece.ID&&y!=now.GetPosition().y)
+                            return false;
+                    }
+                }
+                else
+                    return false;
+        }
+        return true;
+    }
 }
+
+

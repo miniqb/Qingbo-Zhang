@@ -4,6 +4,7 @@ import Board.ChessBoard;
 import Judge.*;
 import Piece.*;
 import Player.*;
+import Sound.WavPlayer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,9 +23,16 @@ public class ChessGame {
             if ( posX<=9 && posX>0 && posY<=10 && posY>0 ) {
                 if(board.GetAimSelect().GetID()==NullPiece.ID && board.GetNowSelect().GetID()==NullPiece.ID) {//如果当前未选择任何有效棋子则选中该棋子
                     board.SetNowSelect(posX,posY);
+
+                    boolean play_pick=true;//是否播放执子音效
+
                     if(board.GetNowSelect().GetGroup()!=Judge.GetNowPlayer().GetGroup()) {//如果选择了对方棋子则重置选择
                         board.ResetSelect();
+                        play_pick=false;
                     }
+
+                    if(play_pick)
+                        new WavPlayer(WavPlayer.PICK).start();
                     //点击时将棋子移动到合适位置，增强观感
                     UpdateFrames();
                     game_image.getGraphics().drawImage(board.GetNowSelect().GetImage()[0], e.getX()-UNIT_SIZE/2, e.getY()-UNIT_SIZE/2, null);
@@ -34,14 +42,22 @@ public class ChessGame {
                     board.SetAimSelect(posX,posY);
                     Judge.GetNowPlayer().MakeChoice(Judge.C_GO);
                     if(ChoiceJudge.Init().DoJudge()){
+                        if(board.GetAimSelect().GetID()==NullPiece.ID)
+                            new WavPlayer(WavPlayer.GO).start();
+                        else
+                            new WavPlayer(WavPlayer.EAT).start();
                         board.MovePiece();
+
                     }
+                    else
+                        new WavPlayer(WavPlayer.BACK).start();
                     board.ResetSelect();
                     UpdateFrames();
                     draw_board.repaint();
                 }
             }
             else{
+                new WavPlayer(WavPlayer.BACK).start();
                 board.ResetSelect();
                 UpdateFrames();
                 draw_board.repaint();
@@ -53,7 +69,6 @@ public class ChessGame {
                 //System.exit(0);
             }
         }
-
     };//下棋时的监听器
 
     private final MouseMotionAdapter mouse_move_play=new MouseMotionAdapter() {
