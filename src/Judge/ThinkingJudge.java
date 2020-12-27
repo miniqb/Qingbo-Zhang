@@ -79,8 +79,9 @@ public class ThinkingJudge extends Judge{
     }
 
     private int HaveTunnel(Point now,Point aim){
+        ChessBoard board=ChessBoard.Init();
         int sum=0;
-        switch (ChessBoard.Init().GetNowSelect().GetName()){
+        switch (board.GetNowSelect().GetName()){
             case ChessPiece.P_PAO_CHU:
             case ChessPiece.P_PAO_HAN:
             case ChessPiece.P_JU_CHU:
@@ -88,40 +89,40 @@ public class ThinkingJudge extends Judge{
                 int max = Math.max(now.x, aim.x);
                 int min = Math.min(now.x, aim.x);
                 for (int x = min+1; x < max; x++) {
-                    if(ChessBoard.Init().GetPiece(x,now.y).GetID()!=NullPiece.ID)
+                    if(board.GetPiece(x,now.y).GetID()!=NullPiece.ID)
                         sum++;
                 }
                 max = Math.max(now.y, aim.y);
                 min = Math.min(now.y, aim.y);
                 for (int y = min+1; y < max; y++) {
-                    if(ChessBoard.Init().GetPiece(now.x,y).GetID()!=NullPiece.ID){
+                    if(board.GetPiece(now.x,y).GetID()!=NullPiece.ID){
                         sum++;
                     }
                 }
                 break;
             case ChessPiece.P_XIANG_CHU:
             case ChessPiece.P_XIANG_HAN:
-                if(ChessBoard.Init().GetPiece((now.x+aim.x)/2,(now.y+aim.y)/2).GetID()!=NullPiece.ID)
+                if(board.GetPiece((now.x+aim.x)/2,(now.y+aim.y)/2).GetID()!=NullPiece.ID)
                     sum++;
                 break;
             case ChessPiece.P_MA_CHU:
             case ChessPiece.P_MA_HAN:
-                if(Math.abs(now.x-aim.x)==2 && ChessBoard.Init().GetPiece((now.x+aim.x)/2,now.y).GetID()!=NullPiece.ID)
+                if(Math.abs(now.x-aim.x)==2 && board.GetPiece((now.x+aim.x)/2,now.y).GetID()!=NullPiece.ID)
                     sum++;
-                else if(Math.abs(now.y-aim.y)==2&&ChessBoard.Init().GetPiece(now.x,(now.y+aim.y)/2).GetID()!=NullPiece.ID)
+                else if(Math.abs(now.y-aim.y)==2&&board.GetPiece(now.x,(now.y+aim.y)/2).GetID()!=NullPiece.ID)
                     sum++;
                 break;
             case ChessPiece.P_JIANG_CHU:
             case ChessPiece.P_SHUAI_HAN:
                 Point head=
-                        ChessBoard.Init().GetPiece(now.x,now.y).GetName().equals(ChessPiece.P_SHUAI_HAN)?
-                        ChessBoard.Init().GetJiang().GetPosition():
-                        ChessBoard.Init().GetShuai().GetPosition();
+                        board.GetPiece(now.x,now.y).GetName().equals(ChessPiece.P_SHUAI_HAN)?
+                        board.GetJiang().GetPosition():
+                        board.GetShuai().GetPosition();
                 if(head.x==aim.x){
                     max=Math.max(aim.y,head.y);
                     min=Math.min(aim.y,head.y);
                     for (int y = min+1; y < max; y++) {
-                        if(ChessBoard.Init().GetPiece(aim.x,y).GetID()!=NullPiece.ID) {
+                        if(board.GetPiece(aim.x,y).GetID()!=NullPiece.ID) {
                             sum++;
                             break;
                         }
@@ -137,16 +138,17 @@ public class ThinkingJudge extends Judge{
     }
 
     private boolean WillHeadMeeting(){
-        Point move_now=ChessBoard.Init().moving;
-        Piece now=ChessBoard.Init().GetNowSelect();
-        Piece aim=ChessBoard.Init().GetPiece(move_now.x,move_now.y);
+        ChessBoard board=ChessBoard.Init();
+        Point move_now=board.moving;
+        Piece now=board.GetNowSelect();
+        Piece aim=board.GetPiece(move_now.x,move_now.y);
         switch (now.GetName()){
             case ChessPiece.P_JIANG_CHU:
-                if(move_now.x==ChessBoard.Init().GetShuai().GetPosition().x) {
-                    int maxY = Math.max(ChessBoard.Init().GetShuai().GetPosition().y, aim.GetPosition().y);
-                    int minY = Math.min(ChessBoard.Init().GetShuai().GetPosition().y, aim.GetPosition().y);
+                if(move_now.x==board.GetShuai().GetPosition().x) {
+                    int maxY = Math.max(board.GetShuai().GetPosition().y, aim.GetPosition().y);
+                    int minY = Math.min(board.GetShuai().GetPosition().y, aim.GetPosition().y);
                     for (int y = minY + 1; y < maxY; y++) {
-                        if (ChessBoard.Init().GetPiece(move_now.x, y).GetID() != NullPiece.ID)
+                        if (board.GetPiece(move_now.x, y).GetID() != NullPiece.ID)
                             return false;
                     }
                 }
@@ -154,11 +156,11 @@ public class ThinkingJudge extends Judge{
                     return false;
                 break;
             case ChessPiece.P_SHUAI_HAN:
-                if(move_now.x==ChessBoard.Init().GetJiang().GetPosition().x) {
-                    int maxY = Math.max(ChessBoard.Init().GetJiang().GetPosition().y, aim.GetPosition().y);
-                    int minY = Math.min(ChessBoard.Init().GetJiang().GetPosition().y, aim.GetPosition().y);
+                if(move_now.x==board.GetJiang().GetPosition().x) {
+                    int maxY = Math.max(board.GetJiang().GetPosition().y, aim.GetPosition().y);
+                    int minY = Math.min(board.GetJiang().GetPosition().y, aim.GetPosition().y);
                     for (int y = minY + 1; y < maxY; y++) {
-                        if (ChessBoard.Init().GetPiece(move_now.x, y).GetID() != NullPiece.ID)
+                        if (board.GetPiece(move_now.x, y).GetID() != NullPiece.ID)
                             return false;
                     }
                 }
@@ -166,12 +168,12 @@ public class ThinkingJudge extends Judge{
                     return false;
                 break;
             default:
-                if(ChessBoard.Init().GetShuai().GetPosition().x==ChessBoard.Init().GetJiang().GetPosition().x&&
-                        now.GetPosition().x==ChessBoard.Init().GetShuai().GetPosition().x&&now.GetPosition().x!=move_now.x){
-                    int maxY=Math.max(ChessBoard.Init().GetJiang().GetPosition().y,ChessBoard.Init().GetShuai().GetPosition().y);
-                    int minY=Math.min(ChessBoard.Init().GetJiang().GetPosition().y,ChessBoard.Init().GetShuai().GetPosition().y);
+                if(board.GetShuai().GetPosition().x==board.GetJiang().GetPosition().x&&
+                        now.GetPosition().x==board.GetShuai().GetPosition().x&&now.GetPosition().x!=move_now.x){
+                    int maxY=Math.max(board.GetJiang().GetPosition().y,board.GetShuai().GetPosition().y);
+                    int minY=Math.min(board.GetJiang().GetPosition().y,board.GetShuai().GetPosition().y);
                     for (int y = minY+1; y < maxY; y++) {
-                        if(ChessBoard.Init().GetPiece(now.GetPosition().x,y).GetID()!=NullPiece.ID&&y!=now.GetPosition().y)
+                        if(board.GetPiece(now.GetPosition().x,y).GetID()!=NullPiece.ID&&y!=now.GetPosition().y)
                             return false;
                     }
                 }

@@ -2,6 +2,8 @@ package Judge;
 
 import Player.*;
 
+import java.awt.*;
+
 public abstract class Judge {
     protected static boolean is_right_position=false;
 
@@ -17,6 +19,11 @@ public abstract class Judge {
     protected static Player player_now;           //当前行动方
     protected static Player player_1;
     protected static Player player_2;
+
+    protected static byte[] last_piece=new byte[2];
+    protected static byte[] last_eaten=new byte[2];
+    protected static Point[] last_position=new Point[2];
+    protected static byte now_group;
 
     public abstract boolean DoJudge();          //对选择的合法性做出判断，同时可以进行一些操作
 

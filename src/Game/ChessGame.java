@@ -8,9 +8,7 @@ import Sound.WavPlayer;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 
 public class ChessGame {
@@ -20,7 +18,7 @@ public class ChessGame {
         public void mousePressed(MouseEvent e) {
             int posX=(int)((double)(e.getX()-OFFSET_W)/UNIT_SIZE+1);
             int posY=(int)((double)(e.getY()-OFFSET_H)/UNIT_SIZE+1);
-            if ( posX<=9 && posX>0 && posY<=10 && posY>0 ) {
+            if ( posX<=9 && posX>0 && posY<=10 && posY>0 && e.getButton()==MouseEvent.BUTTON1) {
                 if(board.GetAimSelect().GetID()==NullPiece.ID && board.GetNowSelect().GetID()==NullPiece.ID) {//如果当前未选择任何有效棋子则选中该棋子
                     board.SetNowSelect(posX,posY);
 
@@ -56,8 +54,9 @@ public class ChessGame {
                     draw_board.repaint();
                 }
             }
-            else{
-                new WavPlayer(WavPlayer.BACK).start();
+            else if(e.getButton()!=MouseEvent.BUTTON2){
+                if(board.GetNowSelect().GetID()!=NullPiece.ID)
+                    new WavPlayer(WavPlayer.BACK).start();
                 board.ResetSelect();
                 UpdateFrames();
                 draw_board.repaint();
@@ -95,6 +94,20 @@ public class ChessGame {
         }
     };//下棋时的监听器
 
+    private final KeyAdapter key_pressed_play=new KeyAdapter() {
+        @Override
+        public void keyPressed(KeyEvent e) {
+            System.out.println("pressed!");
+            Judge.GetNowPlayer().MakeChoice(Judge.C_RETRACT);
+            if(ChoiceJudge.Init().DoJudge()) {
+                board.Retract();
+                UpdateFrames();
+                draw_board.repaint();
+            }
+
+        }
+    };
+
     private final int UNIT_SIZE = 67;
     private final int WIDTH_SIZE;
     private final int HIGH_SIZE;
@@ -108,7 +121,6 @@ public class ChessGame {
 
     private final ChessPlayer player_1;
     private final ChessPlayer player_2;
-    private Judge judge;
     private final ChessBoard board;
 
     public ChessGame(){
@@ -162,7 +174,9 @@ public class ChessGame {
 
         draw_board.addMouseMotionListener(mouse_move_play);
 
+        //draw_board.addKeyListener(key_pressed_play);
 
+        game_frame.addKeyListener(key_pressed_play);
     }
 
     class DrawBoard extends JPanel{

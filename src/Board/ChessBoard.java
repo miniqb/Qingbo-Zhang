@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Stack;
 
 public class ChessBoard {
     private static ChessBoard me;
@@ -24,10 +25,10 @@ public class ChessBoard {
 
     private final Piece[][] pieces_map; //棋盘数组
     private final Piece[] pieces_all; //棋子容器
-    private Piece now_piece_chu;
-    private Piece aim_piece_chu;
-    private Piece now_piece_han;
-    private Piece aim_piece_han;
+
+    private Stack<Step> record= new Stack<>();
+    private final int max_records=2;
+
     public final Point moving=new Point(0,0);
     private Piece now_select;
     private Piece aim_select;
@@ -54,7 +55,6 @@ public class ChessBoard {
 
         now_select=Null;
         aim_select=Null;
-
     }
 
     public static ChessBoard Init(){
@@ -151,6 +151,13 @@ public class ChessBoard {
     }
 
     public void MovePiece(){
+        if(record.size()>=max_records) {
+            Step temp=record.pop();
+            record.pop();
+            record.push(temp);
+        }
+        record.push(new Step(now_select.GetID(),aim_select.GetID(),now_select.GetPosition(),aim_select.GetPosition()));
+
         aim_select.SetAlive(false);
         Point pos_aim=aim_select.GetPosition();
         Point pos_now=now_select.GetPosition();
@@ -159,13 +166,23 @@ public class ChessBoard {
         now_select.Move(pos_aim.x,pos_aim.y);
     }
 
+    public void Retract(){
+        while (!record.empty()){
+            Step step = record.pop();
+            pieces_all[step.eaten].SetAlive(true);
+            pieces_map[step.end.x][step.end.y] = step.eaten==Null.GetID()?NullPiece.GetNull(step.end.x,step.end.y):pieces_all[step.eaten];
+            pieces_map[step.start.x][step.start.y] = pieces_all[step.piece];
+            pieces_all[step.piece].Move(step.start.x, step.start.y);
+        }
+    }
+
+    public int GetRecordSize(){
+        return record.size();
+    }
+
     public void ResetSelect(){
         now_select=Null;
         aim_select=Null;
-    }
-
-    public Piece[][] GetPiecesMap(){
-        return pieces_map;
     }
 
     public Piece GetJiang(){
@@ -174,5 +191,19 @@ public class ChessBoard {
 
     public Piece GetShuai(){
         return pieces_all[9];
+    }
+
+    private class Step{
+        byte piece;
+        byte eaten;
+        Point start;
+        Point end;
+        Step(){}
+        Step(byte piece,byte eaten,Point start,Point end){
+            this.piece=piece;
+            this.eaten=eaten;
+            this.start=start;
+            this.end=end;
+        }
     }
 }
