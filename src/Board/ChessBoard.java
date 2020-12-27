@@ -26,7 +26,7 @@ public class ChessBoard {
     private final Piece[][] pieces_map; //棋盘数组
     private final Piece[] pieces_all; //棋子容器
 
-    private Stack<Step> record= new Stack<>();
+    private final Stack<Step> record= new Stack<>();
     private final int max_records=2;
 
     public final Point moving=new Point(0,0);
