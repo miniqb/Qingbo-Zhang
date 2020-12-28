@@ -27,7 +27,6 @@ public class ChessBoard {
     private final Piece[] pieces_all; //棋子容器
 
     private final Stack<Step> record= new Stack<>();
-    private final int max_records=2;
 
     public final Point moving=new Point(0,0);
     private Piece now_select;
@@ -151,7 +150,8 @@ public class ChessBoard {
     }
 
     public void MovePiece(){
-        if(record.size()>=max_records) {
+        int max_records = 2;
+        if(record.size()>= max_records) {
             Step temp=record.pop();
             record.pop();
             record.push(temp);
