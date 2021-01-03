@@ -3,16 +3,60 @@ package Piece;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public interface Piece {
-    void Move(int x,int y);      //移动自身位置
-    BufferedImage[] GetImage();           //画自己
-    String GetName();          //返回名字
-    byte GetID();              //返回Id
-    byte GetGroup();           //返回阵营
-    Point GetPosition();       //返回位置
-    boolean IsAlive();         //是否存活
-    boolean IsSelected();      //是否被选中
-    boolean IsAllowedAimPosition(Point pos);         //是否是被允许的目标位置
+public interface Piece {//棋子接口类
+
+    /**
+     * 移动自身位置
+     * @param x 目标位置的x坐标
+     * @param y 目标位置的x坐标
+     */
+    void Move(int x,int y);
+
+    /**
+     * 获取棋子的所有图片
+     * @return 返回该棋子的所有图片
+     */
+    BufferedImage[] GetImage();
+
+    /**
+     * 获取该棋子名称
+     * @return 返回该棋子名称
+     */
+    String GetName();
+
+    /**
+     * 获取该棋子id
+     * @return 返回该棋子id
+     */
+    byte GetID();
+
+    /**
+     * 获取该棋子阵营
+     * @return 返回该棋子阵营
+     */
+    byte GetGroup();
+
+    /**
+     * 获取该棋子位置
+     * @return 返回该棋子位置
+     */
+    Point GetPosition();
+
+    /**
+     * 获取该棋子存活状态
+     * @return 返回该棋子是否存活
+     */
+    boolean IsAlive();
+
+    /**
+     * 设置该棋子存活状态
+     * @param b 真为存活
+     */
     void SetAlive(boolean b);
+
+    /**
+     * 获取该棋子可能能去的位置（无视障碍和棋盘边界）
+     * @return 返回该棋子可能能去的位置
+     */
     Point[] GetCanGo();
 }

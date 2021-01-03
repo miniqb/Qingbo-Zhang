@@ -10,9 +10,19 @@ import java.io.File;
 import java.io.IOException;
 
 public class ChessPiece implements Piece{
-    public final static BufferedImage[] pieces_images=new BufferedImage[15];
-    public final static BufferedImage[] pieces_select_images=new BufferedImage[15];
-    public final static BufferedImage[] pieces_pre_images=new BufferedImage[15];
+    /**
+     * 棋子类
+     */
+
+
+    public final static BufferedImage[] pieces_images=new BufferedImage[15];    //所有棋子图片
+    public final static BufferedImage[] pieces_select_images=new BufferedImage[15]; //所有棋子被选中时的图片
+    public final static BufferedImage[] pieces_pre_images=new BufferedImage[15];    //所有棋子”允许位置“图片
+    static {//加载所有棋子图片
+        LoadImages();
+    }
+
+    //各棋子名字，不同种类棋子名字唯一，所以可通过名字区分棋子
     public final static String P_JIANG_CHU = "将";
     public final static String P_SHI_CHU = "士";
     public final static String P_XIANG_CHU = "象";
@@ -29,17 +39,77 @@ public class ChessPiece implements Piece{
     public final static String P_PAO_HAN = "炮";
     public final static String P_BING_HAN = "兵";
 
-    private final Point[] can_go;
-    private final Point position;
-    private final String name;
-    private final byte group;
-    public final byte ID;
-    private final BufferedImage[] image=new BufferedImage[3];
-    private boolean alive=true;
-    //private boolean selected = false;
+    private final Point[] can_go;   //该棋子可能能去的位置
+    private final Point position;   //该棋子位置
+    private final String name;      //该棋子名称
+    private final byte group;       //该棋子阵营
+    public final byte ID;           //该棋子id
+    private final BufferedImage[] image=new BufferedImage[3];   //该棋子的3种状态的图片
+    private boolean alive=true;     //该棋子存活状态
 
+    /**
+     * 加载所有棋子图片
+     */
+    public static void LoadImages(){
+        try {
+            pieces_images[0]=ImageIO.read(new File("image/p_bing_han.png"));
+            pieces_images[1]=ImageIO.read(new File("image/p_che_han.png"));
+            pieces_images[2]=ImageIO.read(new File("image/p_jiang_chu.png"));
+            pieces_images[3]=ImageIO.read(new File("image/p_ju_chu.png"));
+            pieces_images[4]=ImageIO.read(new File("image/p_ma_chu.png"));
+            pieces_images[5]=ImageIO.read(new File("image/p_ma_han.png"));
+            pieces_images[6]=ImageIO.read(new File("image/p_pao_chu.png"));
+            pieces_images[7]=ImageIO.read(new File("image/p_pao_han.png"));
+            pieces_images[8]=ImageIO.read(new File("image/p_shi_chu.png"));
+            pieces_images[9]=ImageIO.read(new File("image/p_shi_han.png"));
+            pieces_images[10]=ImageIO.read(new File("image/p_shuai_han.png"));
+            pieces_images[11]=ImageIO.read(new File("image/p_xiang_chu.png"));
+            pieces_images[12]=ImageIO.read(new File("image/p_xiang_han.png"));
+            pieces_images[13]=ImageIO.read(new File("image/p_zu_chu.png"));
+
+            pieces_select_images[0]=ImageIO.read(new File("image/p_bing_han_1.png"));
+            pieces_select_images[1]=ImageIO.read(new File("image/p_che_han_1.png"));
+            pieces_select_images[2]=ImageIO.read(new File("image/p_jiang_chu_1.png"));
+            pieces_select_images[3]=ImageIO.read(new File("image/p_ju_chu_1.png"));
+            pieces_select_images[4]=ImageIO.read(new File("image/p_ma_chu_1.png"));
+            pieces_select_images[5]=ImageIO.read(new File("image/p_ma_han_1.png"));
+            pieces_select_images[6]=ImageIO.read(new File("image/p_pao_chu_1.png"));
+            pieces_select_images[7]=ImageIO.read(new File("image/p_pao_han_1.png"));
+            pieces_select_images[8]=ImageIO.read(new File("image/p_shi_chu_1.png"));
+            pieces_select_images[9]=ImageIO.read(new File("image/p_shi_han_1.png"));
+            pieces_select_images[10]=ImageIO.read(new File("image/p_shuai_han_1.png"));
+            pieces_select_images[11]=ImageIO.read(new File("image/p_xiang_chu_1.png"));
+            pieces_select_images[12]=ImageIO.read(new File("image/p_xiang_han_1.png"));
+            pieces_select_images[13]=ImageIO.read(new File("image/p_zu_chu_1.png"));
+
+            pieces_pre_images[0]=ImageIO.read(new File("image/p_bing_han_2.png"));
+            pieces_pre_images[1]=ImageIO.read(new File("image/p_che_han_2.png"));
+            pieces_pre_images[2]=ImageIO.read(new File("image/p_jiang_chu_2.png"));
+            pieces_pre_images[3]=ImageIO.read(new File("image/p_ju_chu_2.png"));
+            pieces_pre_images[4]=ImageIO.read(new File("image/p_ma_chu_2.png"));
+            pieces_pre_images[5]=ImageIO.read(new File("image/p_ma_han_2.png"));
+            pieces_pre_images[6]=ImageIO.read(new File("image/p_pao_chu_2.png"));
+            pieces_pre_images[7]=ImageIO.read(new File("image/p_pao_han_2.png"));
+            pieces_pre_images[8]=ImageIO.read(new File("image/p_shi_chu_2.png"));
+            pieces_pre_images[9]=ImageIO.read(new File("image/p_shi_han_2.png"));
+            pieces_pre_images[10]=ImageIO.read(new File("image/p_shuai_han_2.png"));
+            pieces_pre_images[11]=ImageIO.read(new File("image/p_xiang_chu_2.png"));
+            pieces_pre_images[12]=ImageIO.read(new File("image/p_xiang_han_2.png"));
+            pieces_pre_images[13]=ImageIO.read(new File("image/p_zu_chu_2.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("读取图片异常！");
+            System.exit(0);
+        }
+    }
+
+    /**
+     * 构造方法，构造棋子对象时，必须指定名字，id，位置
+     * @param name 名字
+     * @param ID id
+     * @param pos 位置
+     */
     public ChessPiece(String name,byte ID,Point pos) {
-        LoadImages();
         this.name=name;
         this.ID=ID;
         this.position=pos;
@@ -128,64 +198,14 @@ public class ChessPiece implements Piece{
         RegisterImages(subscript);
     }
 
+    /**
+     * 获取该棋子图片
+     * @param n 该棋子id
+     */
     private void RegisterImages(int n){
         this.image[0] = pieces_images[n];
         this.image[1] = pieces_select_images[n];
         this.image[2] = pieces_pre_images[n];
-    }
-
-    private void LoadImages(){
-        try {
-            pieces_images[0]=ImageIO.read(new File("image/p_bing_han.png"));
-            pieces_images[1]=ImageIO.read(new File("image/p_che_han.png"));
-            pieces_images[2]=ImageIO.read(new File("image/p_jiang_chu.png"));
-            pieces_images[3]=ImageIO.read(new File("image/p_ju_chu.png"));
-            pieces_images[4]=ImageIO.read(new File("image/p_ma_chu.png"));
-            pieces_images[5]=ImageIO.read(new File("image/p_ma_han.png"));
-            pieces_images[6]=ImageIO.read(new File("image/p_pao_chu.png"));
-            pieces_images[7]=ImageIO.read(new File("image/p_pao_han.png"));
-            pieces_images[8]=ImageIO.read(new File("image/p_shi_chu.png"));
-            pieces_images[9]=ImageIO.read(new File("image/p_shi_han.png"));
-            pieces_images[10]=ImageIO.read(new File("image/p_shuai_han.png"));
-            pieces_images[11]=ImageIO.read(new File("image/p_xiang_chu.png"));
-            pieces_images[12]=ImageIO.read(new File("image/p_xiang_han.png"));
-            pieces_images[13]=ImageIO.read(new File("image/p_zu_chu.png"));
-
-            pieces_select_images[0]=ImageIO.read(new File("image/p_bing_han_1.png"));
-            pieces_select_images[1]=ImageIO.read(new File("image/p_che_han_1.png"));
-            pieces_select_images[2]=ImageIO.read(new File("image/p_jiang_chu_1.png"));
-            pieces_select_images[3]=ImageIO.read(new File("image/p_ju_chu_1.png"));
-            pieces_select_images[4]=ImageIO.read(new File("image/p_ma_chu_1.png"));
-            pieces_select_images[5]=ImageIO.read(new File("image/p_ma_han_1.png"));
-            pieces_select_images[6]=ImageIO.read(new File("image/p_pao_chu_1.png"));
-            pieces_select_images[7]=ImageIO.read(new File("image/p_pao_han_1.png"));
-            pieces_select_images[8]=ImageIO.read(new File("image/p_shi_chu_1.png"));
-            pieces_select_images[9]=ImageIO.read(new File("image/p_shi_han_1.png"));
-            pieces_select_images[10]=ImageIO.read(new File("image/p_shuai_han_1.png"));
-            pieces_select_images[11]=ImageIO.read(new File("image/p_xiang_chu_1.png"));
-            pieces_select_images[12]=ImageIO.read(new File("image/p_xiang_han_1.png"));
-            pieces_select_images[13]=ImageIO.read(new File("image/p_zu_chu_1.png"));
-
-            pieces_pre_images[0]=ImageIO.read(new File("image/p_bing_han_2.png"));
-            pieces_pre_images[1]=ImageIO.read(new File("image/p_che_han_2.png"));
-            pieces_pre_images[2]=ImageIO.read(new File("image/p_jiang_chu_2.png"));
-            pieces_pre_images[3]=ImageIO.read(new File("image/p_ju_chu_2.png"));
-            pieces_pre_images[4]=ImageIO.read(new File("image/p_ma_chu_2.png"));
-            pieces_pre_images[5]=ImageIO.read(new File("image/p_ma_han_2.png"));
-            pieces_pre_images[6]=ImageIO.read(new File("image/p_pao_chu_2.png"));
-            pieces_pre_images[7]=ImageIO.read(new File("image/p_pao_han_2.png"));
-            pieces_pre_images[8]=ImageIO.read(new File("image/p_shi_chu_2.png"));
-            pieces_pre_images[9]=ImageIO.read(new File("image/p_shi_han_2.png"));
-            pieces_pre_images[10]=ImageIO.read(new File("image/p_shuai_han_2.png"));
-            pieces_pre_images[11]=ImageIO.read(new File("image/p_xiang_chu_2.png"));
-            pieces_pre_images[12]=ImageIO.read(new File("image/p_xiang_han_2.png"));
-            pieces_pre_images[13]=ImageIO.read(new File("image/p_zu_chu_2.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("读取图片异常！");
-            System.exit(0);
-        }
-
     }
 
     @Override
@@ -226,16 +246,6 @@ public class ChessPiece implements Piece{
     }
 
     @Override
-    public boolean IsSelected() {
-        return false;
-    }
-
-    @Override
-    public boolean IsAllowedAimPosition(Point pos) {
-        return true;
-    }
-
-    @Override
     public void SetAlive(boolean b) {
         alive=b;
     }
@@ -245,6 +255,9 @@ public class ChessPiece implements Piece{
         return can_go;
     }
 
+    /**
+     * 计算该棋子当前可能可以去的位置
+     */
     private void CountCanGo(){
         int poX=position.x;
         int poY=position.y;

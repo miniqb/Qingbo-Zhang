@@ -6,6 +6,9 @@ import Piece.*;
 import java.awt.*;
 
 public class ThinkingJudge extends Judge{
+    /**
+     * 该类用于判断选择目标位置时，鼠标移动到的位置是否合法
+     */
     private static ThinkingJudge me;
     public static ThinkingJudge Init() {
         if(me == null)
@@ -14,6 +17,11 @@ public class ThinkingJudge extends Judge{
     }
 
     private ThinkingJudge(){}
+
+    /**
+     * 判断选择的目标位置是否合法
+     * @return 真表示合法
+     */
     @Override
     public boolean DoJudge() {
         Point move_now=ChessBoard.Init().moving;
@@ -78,6 +86,12 @@ public class ThinkingJudge extends Judge{
         return result;
     }
 
+    /**
+     * 获取两个位置间存活棋子个数
+     * @param now 位置1
+     * @param aim 位置2
+     * @return 返回存活棋子个数
+     */
     private int HaveTunnel(Point now,Point aim){
         ChessBoard board=ChessBoard.Init();
         int sum=0;
@@ -137,6 +151,10 @@ public class ThinkingJudge extends Judge{
         return sum;
     }
 
+    /**
+     * 判断“将”和“帅”是否会“见面”
+     * @return 真为会见面
+     */
     private boolean WillHeadMeeting(){
         ChessBoard board=ChessBoard.Init();
         Point move_now=board.moving;
