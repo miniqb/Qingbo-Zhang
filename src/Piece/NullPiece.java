@@ -7,7 +7,7 @@ import java.awt.image.BufferedImage;
 
 public class NullPiece implements Piece{
     /**
-     * 空子类，棋盘上没有子的地方就要放上空子，空子id只能为1，非空子id不能为1，空子名字固定为”Null“，空子状态固定为死亡，空子无阵营，空子保存了位置信息
+     * 空子类，棋盘上没有子的地方就要放上空子，空子id只能为0，非空子id不能为1，空子名字固定为”Null“，空子状态固定为死亡，空子无阵营，空子保存了位置信息
      */
 
     private final static NullPiece[][] null_map = new NullPiece[ChessBoard.WIDTH+1][ChessBoard.HIGH+1]; //空子缓存，以后需要获取空子时直接在这里面获取
@@ -18,6 +18,7 @@ public class NullPiece implements Piece{
             }
         }
     }
+
     private final Point position;
     public final static String NAME = "Null";
     public final static byte ID = 0;

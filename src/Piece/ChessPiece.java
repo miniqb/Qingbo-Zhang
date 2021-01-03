@@ -14,7 +14,6 @@ public class ChessPiece implements Piece{
      * 棋子类
      */
 
-
     public final static BufferedImage[] pieces_images=new BufferedImage[15];    //所有棋子图片
     public final static BufferedImage[] pieces_select_images=new BufferedImage[15]; //所有棋子被选中时的图片
     public final static BufferedImage[] pieces_pre_images=new BufferedImage[15];    //所有棋子”允许位置“图片
