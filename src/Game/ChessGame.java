@@ -77,7 +77,6 @@ public class ChessGame {
                 String name=Judge.getWinner().GetGroup()==Judge.G_HAN?"汉":"楚";
                 System.out.println(name+"获胜");
                 draw_board.removeMouseListener(this);
-                //System.exit(0);
             }
         }
     };//下棋时的监听器
