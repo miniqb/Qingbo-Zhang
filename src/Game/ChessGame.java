@@ -206,11 +206,15 @@ public class ChessGame {
      * 添加事件适配器
      */
     public void StartOperation(){
+        draw_board.setFocusable(true);
+
         draw_board.addMouseListener(mouse_click_play);
 
         draw_board.addMouseMotionListener(mouse_move_play);
 
-        game_frame.addKeyListener(key_pressed_play);
+        draw_board.addKeyListener(key_pressed_play);
+
+
     }
 
     class DrawBoard extends JPanel{
