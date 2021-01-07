@@ -17,7 +17,8 @@ public class ThinkingJudge extends Judge{
     }
 
     private ThinkingJudge(){}
-
+    private final Point move_last=new Point(-1,-1); //上一次moving的位置
+    private boolean result=false;   //判断结果
     /**
      * 判断选择的目标位置是否合法
      * @return 真表示合法
@@ -25,10 +26,13 @@ public class ThinkingJudge extends Judge{
     @Override
     public boolean DoJudge() {
         Point move_now=ChessBoard.Init().moving;
+        //如果这次moving和上次moving所指向棋盘的位置相同，就直接返回上次判断的结果
+        if(move_now.equals(move_last))
+            return result;
+        result=false;
         Piece now=ChessBoard.Init().GetNowSelect();
         Piece aim=ChessBoard.Init().GetPiece(move_now.x,move_now.y);
         Point[] can_go= now.GetCanGo();
-        boolean result=false;
         if(now.GetGroup()!=aim.GetGroup()) {
             for (Point p : can_go) {
                 if (p.equals(move_now)&&!WillHeadMeeting()) {

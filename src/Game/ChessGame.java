@@ -17,94 +17,10 @@ public class ChessGame {
      */
 
     //鼠标点击事件的事件适配器
-    private final MouseAdapter mouse_click_play=new MouseAdapter() {
-        @Override
-        public void mousePressed(MouseEvent e) {    //响应鼠标“按下”事件的方法
-
-            //获取鼠标按下时在棋盘上的单位位置
-            int posX=(int)((double)(e.getX()-OFFSET_W)/UNIT_SIZE+1);
-            int posY=(int)((double)(e.getY()-OFFSET_H)/UNIT_SIZE+1);
-
-            //如果位置在棋盘上（不在边缘处）
-            if ( posX<=9 && posX>0 && posY<=10 && posY>0 && e.getButton()==MouseEvent.BUTTON1) {
-                if(board.GetAimSelect().GetID()==NullPiece.ID && board.GetNowSelect().GetID()==NullPiece.ID) {//如果当前未选择任何有效棋子则选中该棋子
-                    board.SetNowSelect(posX,posY);
-
-                    boolean play_pick=true; //是否播放执子音效
-
-                    if(board.GetNowSelect().GetGroup()!=Judge.GetNowPlayer().GetGroup()) {//如果选择了对方棋子则重置选择
-                        board.ResetSelect();
-                        play_pick=false;    //不播放执子音效
-                    }
-
-                    if(play_pick)   //是否播放执子音效
-                        new WavPlayer(WavPlayer.PICK).start();
-
-                    //点击时将棋子移动到合适位置，增强观感
-                    UpdateFrames();
-                    game_image.getGraphics().drawImage(board.GetNowSelect().GetImage()[0], e.getX()-UNIT_SIZE/2, e.getY()-UNIT_SIZE/2, null);
-                    draw_board.repaint();
-                }
-                else if(board.GetAimSelect().GetID()==NullPiece.ID && board.GetNowSelect().GetID()!=NullPiece.ID){//如果已选择有效棋子且未选择目标位置
-                    board.SetAimSelect(posX,posY);  //设置目标位置
-                    Judge.GetNowPlayer().MakeChoice(Judge.C_GO);    //当前棋手做出“走子”选择
-                    if(ChoiceJudge.Init().DoJudge()){   //如果当前选择合法
-                        if(board.GetAimSelect().GetID()==NullPiece.ID)  //播放走子或吃子音效
-                            new WavPlayer(WavPlayer.GO).start();
-                        else
-                            new WavPlayer(WavPlayer.EAT).start();
-                        board.MovePiece();  //移动棋子
-                    }
-                    else    //如果当前选择不合法
-                        new WavPlayer(WavPlayer.BACK).start();  //播放放弃执子音效
-                    //重置选择并重绘
-                    board.ResetSelect();
-                    UpdateFrames();
-                    draw_board.repaint();
-                }
-            }
-            //如果位置在边缘处且按下的鼠标键不为滚轮
-            else if(e.getButton()!=MouseEvent.BUTTON2){
-                if(board.GetNowSelect().GetID()!=NullPiece.ID){//如果当前选中
-                    new WavPlayer(WavPlayer.BACK).start();//播放放弃执子音效
-                    //重置选择并重绘
-                    board.ResetSelect();
-                    UpdateFrames();
-                    draw_board.repaint();
-                }
-            }
-            if(ResultJudge.Init().DoJudge()){
-                String name=Judge.getWinner().GetGroup()==Judge.G_HAN?"汉":"楚";
-                System.out.println(name+"获胜");
-                draw_board.removeMouseListener(this);
-            }
-        }
-    };//下棋时的监听器
+    private final MouseAdapter mouse_click_play=new MyMouseAdapter();//下棋时的监听器
 
     //鼠标移动事件的事件适配器，在选中棋子时让棋子跟随鼠标移动
-    private final MouseMotionAdapter mouse_move_play=new MouseMotionAdapter() {
-
-        private void MoveAndDrag(MouseEvent e) {    //响应鼠标移动或按下鼠标时移动的方法，用于实现棋子跟随鼠标移动的效果
-            int posX=(int)((double)(e.getX()-OFFSET_W)/UNIT_SIZE+1);
-            int posY=(int)((double)(e.getY()-OFFSET_H)/UNIT_SIZE+1);
-            if(board.GetAimSelect().GetID()==NullPiece.ID && board.GetNowSelect().GetID()!=NullPiece.ID) {
-                board.moving.setLocation(posX,posY);
-                UpdateFrames();
-                if(( posX<=9 && posX>0 && posY<=10 && posY>0 )&&ThinkingJudge.Init().DoJudge())
-                    game_image.getGraphics().drawImage(board.GetNowSelect().GetImage()[2],(posX-1)*UNIT_SIZE+OFFSET_W,(posY-1)*UNIT_SIZE+OFFSET_H,null );
-                game_image.getGraphics().drawImage(board.GetNowSelect().GetImage()[0], e.getX()-UNIT_SIZE/2, e.getY()-UNIT_SIZE/2, null);
-                draw_board.repaint();
-            }
-        }
-        @Override
-        public void mouseDragged(MouseEvent e) {
-            MoveAndDrag(e);
-        }
-        @Override
-        public void mouseMoved(MouseEvent e) {
-            MoveAndDrag(e);
-        }
-    };//下棋时的监听器
+    private final MouseMotionAdapter mouse_move_play=new MyMouseMotionAdapter();//下棋时的监听器
 
     //键盘按下时的事件适配器，用于实现悔棋操作
     private final KeyAdapter key_pressed_play=new KeyAdapter() {
@@ -172,14 +88,14 @@ public class ChessGame {
         game_frame.pack();
         //设置点击右上角”X“关闭程序
         game_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        //显示画面
-        game_frame.setVisible(true);
     }
 
     /**
      * 开始游戏
      */
     public void StartGame(){
+        //显示画面
+        game_frame.setVisible(true);
         //添加事件适配器
         StartOperation();
     }
@@ -213,8 +129,6 @@ public class ChessGame {
         draw_board.addMouseMotionListener(mouse_move_play);
 
         draw_board.addKeyListener(key_pressed_play);
-
-
     }
 
     class DrawBoard extends JPanel{
@@ -222,6 +136,93 @@ public class ChessGame {
         public void paint(Graphics g) { //重写JPanel的paint方法，实现绘制游戏画面
             //画画板
             g.drawImage(game_image,0,0,null);
+        }
+    }
+
+    class MyMouseAdapter extends MouseAdapter{
+        @Override
+        public void mousePressed(MouseEvent e) {    //响应鼠标“按下”事件的方法
+
+            //获取鼠标按下时在棋盘上的单位位置
+            int posX=(int)((double)(e.getX()-OFFSET_W)/UNIT_SIZE+1);
+            int posY=(int)((double)(e.getY()-OFFSET_H)/UNIT_SIZE+1);
+
+            //如果位置在棋盘上（不在边缘处）
+            if ( posX<=9 && posX>0 && posY<=10 && posY>0 && e.getButton()==MouseEvent.BUTTON1) {
+                if(board.GetAimSelect().GetID()==NullPiece.ID && board.GetNowSelect().GetID()==NullPiece.ID) {//如果当前未选择任何有效棋子则选中该棋子
+                    board.SetNowSelect(posX,posY);
+
+                    boolean play_pick=true; //是否播放执子音效
+
+                    if(board.GetNowSelect().GetGroup()!=Judge.GetNowPlayer().GetGroup()) {//如果选择了对方棋子则重置选择
+                        board.ResetSelect();
+                        play_pick=false;    //不播放执子音效
+                    }
+
+                    if(play_pick)   //是否播放执子音效
+                        new WavPlayer(WavPlayer.PICK).start();
+
+                    //点击时将棋子移动到合适位置，增强观感
+                    UpdateFrames();
+                    game_image.getGraphics().drawImage(board.GetNowSelect().GetImage()[0], e.getX()-UNIT_SIZE/2, e.getY()-UNIT_SIZE/2, null);
+                    draw_board.repaint();
+                }
+                else if(board.GetAimSelect().GetID()==NullPiece.ID && board.GetNowSelect().GetID()!=NullPiece.ID){//如果已选择有效棋子且未选择目标位置
+                    board.SetAimSelect(posX,posY);  //设置目标位置
+                    Judge.GetNowPlayer().MakeChoice(Judge.C_GO);    //当前棋手做出“走子”选择
+                    if(ChoiceJudge.Init().DoJudge()){   //如果当前选择合法
+                        if(board.GetAimSelect().GetID()==NullPiece.ID)  //播放走子或吃子音效
+                            new WavPlayer(WavPlayer.GO).start();
+                        else
+                            new WavPlayer(WavPlayer.EAT).start();
+                        board.MovePiece();  //移动棋子
+                    }
+                    else    //如果当前选择不合法
+                        new WavPlayer(WavPlayer.BACK).start();  //播放放弃执子音效
+                    //重置选择并重绘
+                    board.ResetSelect();
+                    UpdateFrames();
+                    draw_board.repaint();
+                }
+            }
+            //如果位置在边缘处且按下的鼠标键不为滚轮
+            else if(e.getButton()!=MouseEvent.BUTTON2){
+                if(board.GetNowSelect().GetID()!=NullPiece.ID){//如果当前选中
+                    new WavPlayer(WavPlayer.BACK).start();//播放放弃执子音效
+                    //重置选择并重绘
+                    board.ResetSelect();
+                    UpdateFrames();
+                    draw_board.repaint();
+                }
+            }
+            if(ResultJudge.Init().DoJudge()){
+                String name=Judge.getWinner().GetGroup()==Judge.G_HAN?"汉":"楚";
+                System.out.println(name+"获胜");
+                draw_board.removeMouseListener(this);
+            }
+        }
+    }
+
+    class MyMouseMotionAdapter extends MouseMotionAdapter{
+        private void MoveAndDrag(MouseEvent e) {    //响应鼠标移动或按下鼠标时移动的方法，用于实现棋子跟随鼠标移动的效果
+            int posX=(int)((double)(e.getX()-OFFSET_W)/UNIT_SIZE+1);
+            int posY=(int)((double)(e.getY()-OFFSET_H)/UNIT_SIZE+1);
+            if(board.GetAimSelect().GetID()==NullPiece.ID && board.GetNowSelect().GetID()!=NullPiece.ID) {
+                board.moving.setLocation(posX,posY);
+                UpdateFrames();
+                if(( posX<=9 && posX>0 && posY<=10 && posY>0 )&&ThinkingJudge.Init().DoJudge())
+                    game_image.getGraphics().drawImage(board.GetNowSelect().GetImage()[2],(posX-1)*UNIT_SIZE+OFFSET_W,(posY-1)*UNIT_SIZE+OFFSET_H,null );
+                game_image.getGraphics().drawImage(board.GetNowSelect().GetImage()[0], e.getX()-UNIT_SIZE/2, e.getY()-UNIT_SIZE/2, null);
+                draw_board.repaint();
+            }
+        }
+        @Override
+        public void mouseDragged(MouseEvent e) {
+            MoveAndDrag(e);
+        }
+        @Override
+        public void mouseMoved(MouseEvent e) {
+            MoveAndDrag(e);
         }
     }
 }
