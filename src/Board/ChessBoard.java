@@ -34,6 +34,7 @@ public class ChessBoard {
 
     //棋盘数组
     private final Piece[][] pieces_map;
+    public static final int ALL_SUM=33;
     //棋子容器
     private final Piece[] pieces_all;
 
@@ -65,12 +66,14 @@ public class ChessBoard {
         for (int i = 0; i <= WIDTH; i++) {
             pieces_map[i] = new Piece[HIGH+1];
         }
-        pieces_all = new Piece[33];
+        pieces_all = new Piece[ALL_SUM];
 
         //创造棋子
         CreatePieces();
         //按初始位置摆好棋子
         InitializePieces();
+
+        UpdatePiecesCanGo();
 
         now_select=Null;
         aim_select=Null;
@@ -216,7 +219,22 @@ public class ChessBoard {
      */
     public void MovePiece(){
         //记录该步
-        record.push(new Step(now_select.GetID(),aim_select.GetID(),now_select.GetPosition(),aim_select.GetPosition()));
+        record.push(new Step(now_select.GetID(), aim_select.GetID(), now_select.GetPosition(), aim_select.GetPosition()));
+
+        //移动棋子
+        aim_select.SetAlive(false); //令目标位置棋子死亡
+        Point pos_aim=aim_select.GetPosition();
+        Point pos_now=now_select.GetPosition();
+        pieces_map[pos_aim.x][pos_aim.y]=now_select; //在棋盘上的目标位置放置选中棋子
+        pieces_map[pos_now.x][pos_now.y]=NullPiece.GetNull(pos_now.x,pos_now.y); //将原来选中棋子的位置放置空子
+        now_select.Move(pos_aim.x,pos_aim.y);   //将选中棋子的位置改为目标位置
+    }
+
+    public void MovePiece(Point now,Point aim){
+        Piece now_select=pieces_map[now.x][now.y];
+        Piece aim_select=pieces_map[aim.x][aim.y];
+        //记录该步
+        record.push(new Step(now_select.GetID(), aim_select.GetID(), now_select.GetPosition(), aim_select.GetPosition()));
 
         //移动棋子
         aim_select.SetAlive(false); //令目标位置棋子死亡
@@ -231,16 +249,18 @@ public class ChessBoard {
      * 执行悔棋操作，退回上一步（双方同时退回一步）
      */
     public void Retract(){
-        while (!record.empty()){
-            Step step = record.pop();   //将上一步弹出记录栈
-            pieces_all[step.eaten].SetAlive(true);  //将被吃的子复活
+        if(record.size()>=2&&!record.empty()){
+            for (int i = 0; i < 2; i++) {
+                Step step = record.pop();   //将上一步弹出记录栈
+                pieces_all[step.eaten].SetAlive(true);  //将被吃的子复活
 
-            //还原上一步棋盘中目标位置的棋子和选中位置的棋子
-            pieces_map[step.end.x][step.end.y] = step.eaten==Null.GetID()?NullPiece.GetNull(step.end.x,step.end.y):pieces_all[step.eaten];
-            pieces_map[step.start.x][step.start.y] = pieces_all[step.piece];
+                //还原上一步棋盘中目标位置的棋子和选中位置的棋子
+                pieces_map[step.end.x][step.end.y] = step.eaten == Null.GetID() ? NullPiece.GetNull(step.end.x, step.end.y) : pieces_all[step.eaten];
+                pieces_map[step.start.x][step.start.y] = pieces_all[step.piece];
 
-            //将上一步选中棋子位置还原
-            pieces_all[step.piece].Move(step.start.x, step.start.y);
+                //将上一步选中棋子位置还原
+                pieces_all[step.piece].Move(step.start.x, step.start.y);
+            }
         }
     }
 
@@ -276,7 +296,15 @@ public class ChessBoard {
         return pieces_all[9];
     }
 
-    class Step{
+    public void UpdatePiecesCanGo()
+    {
+        for (Piece piece:pieces_all) {
+            if(piece.IsAlive())
+                piece.CountCanGo(pieces_map);
+        }
+    }
+
+    public static class Step{
         /**
          * 用于包装棋步信息的类
          */

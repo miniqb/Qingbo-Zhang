@@ -1,6 +1,8 @@
 package Judge;
 
 import Board.ChessBoard;
+import Game.ChessGame;
+import Player.Player;
 
 public class ChoiceJudge extends Judge{
     /**
@@ -32,14 +34,11 @@ public class ChoiceJudge extends Judge{
             case C_GO:
                 if(board.GetAimSelect()==board.GetNowSelect()||!is_right_position)  //如果选中棋子和目标位置棋子相同或者目标位置棋子不合法
                     result=false;
-                else {  //若合法，轮到下名玩家
+                else if(ChessGame.mod==ChessGame.HERE){  //若合法，轮到下名玩家
                     player_now=player_now==player_1?player_2:player_1;
                 }
                 break;
             case C_RETRACT:
-                if(board.GetRecordSize()==1){   //悔棋是必定合法的，因为当无法悔棋时，棋盘类中悔棋方法本就不会执行；
-                    player_now=player_now==player_1?player_2:player_1;  //设置当前执子玩家
-                }
                 break;
         }
         return result;//返回结果

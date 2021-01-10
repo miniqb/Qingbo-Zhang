@@ -8,7 +8,7 @@ public class ChessPlayer implements Player{
     private byte group; //玩家阵营
     private byte choice;    //玩家的选择
 
-    public ChessPlayer(){}
+    public ChessPlayer(){ }
     public byte GetGroup() {
         return group;
     }
@@ -32,6 +32,5 @@ public class ChessPlayer implements Player{
     public void SetGroup(byte group) {
         this.group = group;
     }
-
 
 }

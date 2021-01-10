@@ -48,7 +48,6 @@ public class WavPlayer extends Thread {
             e.printStackTrace();
             return;
         }
-
         AudioFormat format = audioInputStream.getFormat();
         SourceDataLine auline;
         DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
@@ -79,7 +78,5 @@ public class WavPlayer extends Thread {
             auline.drain();
             auline.close();
         }
-
-
     }
 }

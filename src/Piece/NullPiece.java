@@ -4,6 +4,7 @@ import Board.ChessBoard;
 import Judge.Judge;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 public class NullPiece implements Piece{
     /**
@@ -77,7 +78,10 @@ public class NullPiece implements Piece{
     public void SetAlive(boolean b) {}
 
     @Override
-    public Point[] GetCanGo() {
+    public List<Point> GetCanGo() {
         return null;
     }
+
+    @Override
+    public void CountCanGo(Piece[][] map){}
 }

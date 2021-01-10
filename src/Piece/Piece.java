@@ -2,6 +2,7 @@ package Piece;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 public interface Piece {//棋子接口类
 
@@ -58,5 +59,7 @@ public interface Piece {//棋子接口类
      * 获取该棋子可能能去的位置（无视障碍和棋盘边界）
      * @return 返回该棋子可能能去的位置
      */
-    Point[] GetCanGo();
+    List<Point> GetCanGo();
+
+    void CountCanGo(Piece[][] map);
 }
