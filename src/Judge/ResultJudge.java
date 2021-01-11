@@ -27,6 +27,8 @@ public class ResultJudge extends Judge{
      */
     @Override
     public boolean DoJudge() {
+        if(winner!=null)
+            return true;
         byte win_group=WhoWin();
         if(win_group!=G_NULL){
             winner=player_1.GetGroup()==win_group?player_1:player_2;

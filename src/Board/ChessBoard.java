@@ -151,6 +151,7 @@ public class ChessBoard {
             for (int i = 1; i < pieces_all.length; i++) { //在棋盘上摆子
                 Point temp = pieces_all[i].GetPosition();
                 pieces_map[temp.x][temp.y] = pieces_all[i];
+                pieces_all[i].SetAlive(true);
             }
         }
 

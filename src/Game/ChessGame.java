@@ -16,6 +16,9 @@ import java.awt.image.BufferedImage;
 import java.util.Scanner;
 
 public class ChessGame {
+
+    int flagg=1;
+
     /**
      * 用于管理游戏进行的类
      */
@@ -151,6 +154,17 @@ public class ChessGame {
             Receive();
         }
         StartOperation();
+        while (true){
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if(flagg!=1){
+                System.out.println(flagg);
+                flagg=1;
+            }
+        }
     }
 
     private void Receive(){
@@ -166,7 +180,7 @@ public class ChessGame {
         if(ResultJudge.Init().DoJudge()){
             String name=Judge.getWinner().GetGroup()==Judge.G_HAN?"汉":"楚";
             System.out.println(name+"获胜");
-            RemoveOperation();
+            System.exit(0);
         }
     }
     /**
@@ -254,6 +268,7 @@ public class ChessGame {
                         if(mod==THERE)
                             internet.Send(board.GetNowSelect().GetPosition(),board.GetAimSelect().GetPosition());//发送数据
                         board.MovePiece();  //移动棋子
+                        flagg=2;
                         //重置选择并重绘
                         board.ResetSelect();
                         UpdateFrames();
@@ -289,7 +304,7 @@ public class ChessGame {
             if(ResultJudge.Init().DoJudge()){
                 String name=Judge.getWinner().GetGroup()==Judge.G_HAN?"汉":"楚";
                 System.out.println(name+"获胜");
-                draw_board.removeMouseListener(this);
+                System.exit(0);
             }
         }
     }
