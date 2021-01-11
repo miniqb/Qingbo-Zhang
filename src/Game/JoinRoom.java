@@ -1,12 +1,7 @@
 package Game;
 
-import Internet.*;
-
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Arrays;
 
 public class JoinRoom {
     JFrame frame=new JFrame("加入棋局");
@@ -15,9 +10,7 @@ public class JoinRoom {
     JLabel points=new JLabel("请输入要加入的IP地址：");
     JButton confirm=new JButton("确认");
     void Init(StringBuffer add){
-        confirm.addActionListener(e -> {
-            add.append(text.getText());
-        });
+        confirm.addActionListener(e -> add.append(text.getText()));
 
 
         text.setPreferredSize(new Dimension(300,30));
