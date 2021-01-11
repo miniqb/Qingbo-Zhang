@@ -13,12 +13,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class ChessGame {
-
-    int flagg=1;
-
     /**
      * 用于管理游戏进行的类
      */
@@ -67,6 +67,8 @@ public class ChessGame {
 
     public static byte mod=THERE;
 
+    public ProcessControl control=new ProcessControl();
+
 
     /**
      * 初始化各种数据
@@ -87,10 +89,26 @@ public class ChessGame {
 
         if(mod==THERE){
             if(c_g==2) {
+                CreateRoom creator=new CreateRoom();
+                creator.Init();
                 internet = new Server();
+                creator.Close();
             }
             else {
-                internet = new Client(1234);
+                JoinRoom joiner=new JoinRoom();
+                StringBuffer add=new StringBuffer();
+                //String add ="null";
+                joiner.Init(add);
+                while (add.length()==0){
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                internet = new Client(add.toString(),1234);
+
+                joiner.Close();
             }
         }
 
@@ -149,22 +167,8 @@ public class ChessGame {
         //显示画面
         game_frame.setVisible(true);
         //添加事件适配器
-        //draw_board.setFocusable(true);
-        if(mod==THERE&&Judge.GetNowPlayer().GetGroup()==Judge.G_CHU) {
-            Receive();
-        }
         StartOperation();
-        while (true){
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            if(flagg!=1){
-                System.out.println(flagg);
-                flagg=1;
-            }
-        }
+        control.StartControl();
     }
 
     private void Receive(){
@@ -177,11 +181,6 @@ public class ChessGame {
         draw_board.repaint();
         board.UpdatePiecesCanGo();
         new WavPlayer(type).start();
-        if(ResultJudge.Init().DoJudge()){
-            String name=Judge.getWinner().GetGroup()==Judge.G_HAN?"汉":"楚";
-            System.out.println(name+"获胜");
-            System.exit(0);
-        }
     }
     /**
      * 根据棋盘信息更新游戏画面
@@ -212,17 +211,6 @@ public class ChessGame {
         draw_board.addMouseMotionListener(mouse_move_play);
 
         draw_board.addKeyListener(key_pressed_play);
-    }
-
-    /**
-     * 添加事件适配器
-     */
-    public void RemoveOperation(){
-        draw_board.removeMouseListener(mouse_click_play);
-
-        draw_board.removeMouseMotionListener(mouse_move_play);
-
-        draw_board.removeKeyListener(key_pressed_play);
     }
 
     class DrawBoard extends JPanel{
@@ -265,22 +253,11 @@ public class ChessGame {
                             new WavPlayer(WavPlayer.GO).start();
                         else
                             new WavPlayer(WavPlayer.EAT).start();
-                        if(mod==THERE)
-                            internet.Send(board.GetNowSelect().GetPosition(),board.GetAimSelect().GetPosition());//发送数据
-                        board.MovePiece();  //移动棋子
-                        flagg=2;
-                        //重置选择并重绘
-                        board.ResetSelect();
-                        UpdateFrames();
-                        draw_board.repaint();
-                        board.UpdatePiecesCanGo();
-                        if(mod==THERE) {
-                            new Thread(() -> {
-                                RemoveOperation();
-                                Receive();
-                                StartOperation();
-                            }).start();
-                        }
+
+                        control.MoveEnd();
+
+
+
                     }
                     else {   //如果当前选择不合法
                         new WavPlayer(WavPlayer.BACK).start();  //播放放弃执子音效
@@ -300,11 +277,6 @@ public class ChessGame {
                     UpdateFrames();
                     draw_board.repaint();
                 }
-            }
-            if(ResultJudge.Init().DoJudge()){
-                String name=Judge.getWinner().GetGroup()==Judge.G_HAN?"汉":"楚";
-                System.out.println(name+"获胜");
-                System.exit(0);
             }
         }
     }
@@ -329,6 +301,64 @@ public class ChessGame {
         @Override
         public void mouseMoved(MouseEvent e) {
             MoveAndDrag(e);
+        }
+    }
+
+    class ProcessControl {
+        private boolean move_end=false;
+
+        public void StartControl(){
+            if(mod==THERE&&Judge.GetNowPlayer().GetGroup()==Judge.G_CHU) {
+                ChoiceJudge.Init().OtherEnd(false);
+                Receive();
+                ChoiceJudge.Init().OtherEnd(true);
+            }
+            while (true){
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+
+                if(move_end){
+                    if(mod==THERE){
+                        ChoiceJudge.Init().OtherEnd(false);
+                        internet.Send(board.GetNowSelect().GetPosition(),board.GetAimSelect().GetPosition());//发送数据
+                    }
+
+
+                    board.MovePiece();  //移动棋子
+
+                    //重置选择并重绘
+                    board.ResetSelect();
+                    UpdateFrames();
+                    draw_board.repaint();
+                    board.UpdatePiecesCanGo();
+                    move_end=false;
+
+                    if(mod==THERE){
+                        if(ResultJudge.Init().DoJudge()){
+                            String name=Judge.getWinner().GetGroup()==Judge.G_HAN?"汉":"楚";
+                            System.out.println(name+"获胜");
+                            System.exit(0);
+                        }
+                        ChoiceJudge.Init().OtherEnd(false);
+                        Receive();
+                        ChoiceJudge.Init().OtherEnd(true);
+                    }
+                    if(ResultJudge.Init().DoJudge()){
+                        String name=Judge.getWinner().GetGroup()==Judge.G_HAN?"汉":"楚";
+                        System.out.println(name+"获胜");
+                        System.exit(0);
+                    }
+
+                }
+            }
+        }
+
+        public void MoveEnd(){
+            move_end=true;
         }
     }
 }

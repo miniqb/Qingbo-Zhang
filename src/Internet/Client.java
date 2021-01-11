@@ -11,11 +11,11 @@ import java.net.Socket;
 
 public class Client implements Internet{
     private Socket client;
-    public Client(int port) {
+    public Client(String add,int port) {
         try {
             System.out.println("客户器端正在尝试连接服务器端。。。");
-            byte[] add={100,71,12,8};
-            client = new Socket(InetAddress.getLoopbackAddress(), port);
+            client = new Socket(add, port);
+            System.out.println(InetAddress.getLocalHost().getHostName());
             System.out.println("客户端已成功连接到服务器端");
         } catch (IOException e) {
             e.printStackTrace();
@@ -48,7 +48,6 @@ public class Client implements Internet{
             points[1]=new Point(receive[2],receive[3]);
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("error");
         }
         return points;
     }

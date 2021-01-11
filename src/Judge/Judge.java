@@ -90,52 +90,37 @@ public abstract class Judge {
      */
     protected boolean WillHeadMeeting(Point start,Point end){
         ChessBoard board=ChessBoard.Init();
-        /*
-        Point move_now=board.moving;
-        Piece now=board.GetNowSelect();
-        Piece aim=board.GetPiece(move_now.x,move_now.y);
-         */
-        Piece now=board.GetPiece(start.x,start.y);
-        
-        switch (now.GetName()){
-            case ChessPiece.P_JIANG_CHU:
-                if(start.x==board.GetShuai().GetPosition().x) {
-                    int maxY = Math.max(board.GetShuai().GetPosition().y, end.y);
-                    int minY = Math.min(board.GetShuai().GetPosition().y, end.y);
-                    for (int y = minY + 1; y < maxY; y++) {
-                        if (board.GetPiece(start.x, y).GetID() != NullPiece.ID)
-                            return false;
-                    }
-                }
-                else
+        Point shuai = board.GetShuai().GetPosition();
+        Point jiang = board.GetJiang().GetPosition();
+        if((start.equals(jiang)&&end.x==shuai.x)||(start.equals(shuai)&&end.x==jiang.x)){
+            int maxY,minY;
+            if(start.equals(jiang)) {
+                maxY = Math.max(end.y, shuai.y);
+                minY = Math.min(end.y, shuai.y);
+            }
+            else {
+                maxY = Math.max(end.y, jiang.y);
+                minY = Math.min(end.y, jiang.y);
+            }
+            for (int i = minY+1; i < maxY; i++) {
+                if(board.GetPiece(end.x,i).GetID()!=NullPiece.ID)
                     return false;
-                break;
-            case ChessPiece.P_SHUAI_HAN:
-                if(start.x==board.GetJiang().GetPosition().x) {
-                    int maxY = Math.max(board.GetJiang().GetPosition().y, end.y);
-                    int minY = Math.min(board.GetJiang().GetPosition().y, end.y);
-                    for (int y = minY + 1; y < maxY; y++) {
-                        if (board.GetPiece(start.x, y).GetID() != NullPiece.ID)
-                            return false;
-                    }
-                }
-                else
-                    return false;
-                break;
-            default:
-                if(board.GetShuai().GetPosition().x==board.GetJiang().GetPosition().x&&
-                        now.GetPosition().x==board.GetShuai().GetPosition().x&&now.GetPosition().x!=start.x){
-                    int maxY=Math.max(board.GetJiang().GetPosition().y,board.GetShuai().GetPosition().y);
-                    int minY=Math.min(board.GetJiang().GetPosition().y,board.GetShuai().GetPosition().y);
-                    for (int y = minY+1; y < maxY; y++) {
-                        if(board.GetPiece(now.GetPosition().x,y).GetID()!= NullPiece.ID&&y!=now.GetPosition().y)
-                            return false;
-                    }
-                }
-                else
-                    return false;
+            }
+            return true;
         }
-        return true;
+        if(start.x==jiang.x&&start.x!=end.x&&jiang.x==shuai.x){
+            System.out.println("start.y!=end.y");
+            int maxY=Math.max(jiang.y,shuai.y);
+            int minY=Math.min(jiang.y,shuai.y);
+            for (int i = minY+1; i < maxY; i++) {
+                System.out.println(jiang.x+","+i);
+                System.out.println(board.GetPiece(jiang.x,i).GetName());
+                if(i!=start.y&&board.GetPiece(jiang.x,i).GetID()!=NullPiece.ID)
+                    return false;
+            }
+            return true;
+        }
+        return false;
     }
 
     protected boolean WillHeadEaten(Piece piece,Point start,Point end){

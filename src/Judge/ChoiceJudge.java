@@ -1,8 +1,6 @@
 package Judge;
 
-import Board.ChessBoard;
 import Game.ChessGame;
-import Player.Player;
 
 public class ChoiceJudge extends Judge{
     /**
@@ -10,6 +8,8 @@ public class ChoiceJudge extends Judge{
      */
 
     private static ChoiceJudge me;//单例对象
+
+    private boolean other_end=true;
 
     /**
      * 获取单例对象
@@ -27,12 +27,11 @@ public class ChoiceJudge extends Judge{
      */
     @Override
     public boolean DoJudge() {
-        ChessBoard board=ChessBoard.Init();
         boolean result=true;    //判断结果
         switch (player_now.GetChoice())
         {
             case C_GO:
-                if(board.GetAimSelect()==board.GetNowSelect()||!is_right_position)  //如果选中棋子和目标位置棋子相同或者目标位置棋子不合法
+                if(!other_end||!is_right_position)  //如果选中棋子和目标位置棋子相同或者目标位置棋子不合法
                     result=false;
                 else if(ChessGame.mod==ChessGame.HERE){  //若合法，轮到下名玩家
                     player_now=player_now==player_1?player_2:player_1;
@@ -42,5 +41,9 @@ public class ChoiceJudge extends Judge{
                 break;
         }
         return result;//返回结果
+    }
+
+    public void OtherEnd(boolean oe){
+        other_end=oe;
     }
 }

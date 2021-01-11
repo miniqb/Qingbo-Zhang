@@ -1,5 +1,6 @@
 package Board;
 
+import Game.ChessGame;
 import Judge.Judge;
 import Piece.*;
 
@@ -8,7 +9,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Stack;
 
 public class ChessBoard {
     /**
@@ -50,6 +50,8 @@ public class ChessBoard {
 
     //棋盘图片
     private BufferedImage board_image;
+
+    private boolean information_change = false;
 
     //构造方法，对一些数据进行初始化
     private ChessBoard(){
@@ -153,6 +155,7 @@ public class ChessBoard {
                 pieces_map[temp.x][temp.y] = pieces_all[i];
                 pieces_all[i].SetAlive(true);
             }
+            information_change=true;
         }
 
     /**
@@ -220,7 +223,8 @@ public class ChessBoard {
      */
     public void MovePiece(){
         //记录该步
-        record.push(new Step(now_select.GetID(), aim_select.GetID(), now_select.GetPosition(), aim_select.GetPosition()));
+        if(ChessGame.mod==ChessGame.HERE)
+            record.push(new Step(now_select.GetID(), aim_select.GetID(), now_select.GetPosition(), aim_select.GetPosition()));
 
         //移动棋子
         aim_select.SetAlive(false); //令目标位置棋子死亡
@@ -229,6 +233,7 @@ public class ChessBoard {
         pieces_map[pos_aim.x][pos_aim.y]=now_select; //在棋盘上的目标位置放置选中棋子
         pieces_map[pos_now.x][pos_now.y]=NullPiece.GetNull(pos_now.x,pos_now.y); //将原来选中棋子的位置放置空子
         now_select.Move(pos_aim.x,pos_aim.y);   //将选中棋子的位置改为目标位置
+        information_change=true;
     }
 
     public void MovePiece(Point now,Point aim){
@@ -244,6 +249,7 @@ public class ChessBoard {
         pieces_map[pos_aim.x][pos_aim.y]=now_select; //在棋盘上的目标位置放置选中棋子
         pieces_map[pos_now.x][pos_now.y]=NullPiece.GetNull(pos_now.x,pos_now.y); //将原来选中棋子的位置放置空子
         now_select.Move(pos_aim.x,pos_aim.y);   //将选中棋子的位置改为目标位置
+        information_change=true;
     }
 
     /**
@@ -263,14 +269,6 @@ public class ChessBoard {
                 pieces_all[step.piece].Move(step.start.x, step.start.y);
             }
         }
-    }
-
-    /**
-     * 获取记录栈当前大小
-     * @return  返回记录栈当前大小
-     */
-    public int GetRecordSize(){
-        return record.size();
     }
 
     /**
@@ -297,11 +295,13 @@ public class ChessBoard {
         return pieces_all[9];
     }
 
-    public void UpdatePiecesCanGo()
-    {
-        for (Piece piece:pieces_all) {
-            if(piece.IsAlive())
-                piece.CountCanGo(pieces_map);
+    public void UpdatePiecesCanGo(){
+        if(information_change) {
+            for (Piece piece : pieces_all) {
+                if (piece.IsAlive())
+                    piece.CountCanGo(pieces_map);
+            }
+            information_change=false;
         }
     }
 
