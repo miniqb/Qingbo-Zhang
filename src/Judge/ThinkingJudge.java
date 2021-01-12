@@ -144,8 +144,8 @@ public class ThinkingJudge extends Judge{
     }
 
     public static void Resetting(){
-        me.move_last.setLocation(-1,-1);
-        me.thinking_result =false;
+        ThinkingJudge.Init().move_last.setLocation(0,0);
+        ThinkingJudge.Init().thinking_result =false;
     }
 }
 

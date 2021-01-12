@@ -21,8 +21,6 @@ public abstract class Judge {
     public final static byte G_HAN = 2;         //汉方
     public final static byte C_GO = 1;          //走子
     public final static byte C_RETRACT = 2;     //悔棋
-    public final static byte C_GIVE_UP = 3;     //认输
-    public final static byte THINKING = 0;      //思考ing
     protected static Player winner;               //赢家
     protected static Player loser;                //输家
     protected static Player player_now;           //当前行动方

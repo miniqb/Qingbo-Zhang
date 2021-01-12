@@ -3,6 +3,9 @@ package Game;
 public class GameEntrance {
     //游戏入口
     public static void main(String[] args) {
+        Start();
+    }
+    static public void Start(){
         byte[] choose={0};
         StartFrame start=new StartFrame();
         start.Init(choose);

@@ -12,6 +12,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.util.Random;
 import java.util.Scanner;
 
 public class ChessGame {
@@ -19,8 +20,9 @@ public class ChessGame {
      * 用于管理游戏进行的类
      */
 
-    public static final byte HERE=1;
-    public static final byte THERE=2;
+    public static final byte HERE=1;//不联机
+    public static final byte THERE_F=2;//联机
+    public static final byte THERE_S=3;
     //鼠标点击事件的事件适配器
     private final MouseAdapter mouse_click_play=new MyMouseAdapter();//下棋时的监听器
 
@@ -31,7 +33,7 @@ public class ChessGame {
     private final KeyAdapter key_pressed_play=new KeyAdapter() {
         @Override
         public void keyPressed(KeyEvent e) {
-            if(mod==THERE)
+            if(mod!=HERE)
                 return;
             Judge.GetNowPlayer().MakeChoice(Judge.C_RETRACT);//当前棋手做出“悔棋”选择
             if(ChoiceJudge.Init().DoJudge()) {  //判断选择是否合法
@@ -46,15 +48,16 @@ public class ChessGame {
     };
 
     private final int UNIT_SIZE = 67;   //棋盘上格子的边长
-    private final int WIDTH_SIZE;   //棋盘宽格子数
-    private final int HIGH_SIZE;    //棋盘高格子数
+    private final int WIDTH_SIZE;   //棋盘宽度
+    private final int HIGH_SIZE;    //棋盘高度
     private final int OFFSET_W;     //棋盘左边缘距离棋盘的距离
     private final int OFFSET_H;     //棋盘上边缘距离棋盘的距离
 
-    private BufferedImage game_image;   //整个棋盘画面的图像
+    private final BufferedImage game_image;   //整个棋盘画面的图像
 
     JFrame game_frame = new JFrame("象棋");   //游戏窗口
     DrawBoard draw_board = new DrawBoard(); //棋盘画板，用于在上面绘图
+    ChoicePanel choice_panel;
 
     private final ChessPlayer player_1; //玩家1
     private final ChessPlayer player_2; //玩家2
@@ -62,7 +65,7 @@ public class ChessGame {
 
     private Internet internet=null;
 
-    public static byte mod=THERE;
+    public static byte mod=HERE;
 
     public ProcessControl control=new ProcessControl();
 
@@ -71,40 +74,46 @@ public class ChessGame {
      * 初始化各种数据
      */
     public ChessGame(byte choose){
-        Scanner scanner=new Scanner(System.in);
         mod=choose;
-        System.out.println("请选择先走还是后走：先：2;后：1");
-        byte c_g=scanner.nextByte();
         //初始化玩家
         player_1=new ChessPlayer();
         player_2=new ChessPlayer();
 
         //为玩家指定阵营
-        player_1.SetGroup(c_g);
-        player_2.SetGroup(c_g==Judge.G_CHU?Judge.G_HAN:Judge.G_CHU);
-
-        if(mod==THERE){
-            if(c_g==2) {
-                CreateRoom creator=new CreateRoom();
-                creator.Init();
-                internet = new Server();
-                creator.Close();
+        switch (mod) {
+            case HERE -> {
+                player_1.SetGroup(new Random().nextInt() % 2 == 0 ? Judge.G_HAN : Judge.G_CHU);
+                player_2.SetGroup(player_1.GetGroup() == Judge.G_CHU ? Judge.G_HAN : Judge.G_CHU);
             }
-            else {
-                JoinRoom joiner=new JoinRoom();
-                StringBuffer add=new StringBuffer();
-                joiner.Init(add);
-                while (add.length()==0){
-                    try {
+            case THERE_F -> {
+                player_1.SetGroup(Judge.G_HAN);
+                player_2.SetGroup(Judge.G_CHU);
+            }
+            case THERE_S -> {
+                player_1.SetGroup(Judge.G_CHU);
+                player_2.SetGroup(Judge.G_HAN);
+            }
+        }
+
+        if(mod==THERE_F){
+            CreateRoom creator=new CreateRoom();
+            creator.Init();
+            internet = new Server();
+            creator.Close();
+        }
+        else if(mod==THERE_S){
+            JoinRoom joiner=new JoinRoom();
+            StringBuffer add=new StringBuffer();
+            joiner.Init(add);
+            while (add.length()==0){
+                try {
                         Thread.sleep(10);
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                    e.printStackTrace();
                 }
-                internet = new Client(add.toString(),8886);
-
-                joiner.Close();
             }
+            internet = new Client(add.toString(),8886);
+            joiner.Close();
         }
 
         //向裁判提供玩家信息
@@ -129,7 +138,10 @@ public class ChessGame {
         //向窗口载入画板
         game_frame.add(draw_board);
         game_frame.setLayout(new FlowLayout(FlowLayout.LEFT,0,0));
-
+        if(mod==HERE){
+            choice_panel=new ChoicePanel(HIGH_SIZE);
+            game_frame.add(choice_panel.GetPanel());
+        }
         //窗口自适应初始大小
         game_frame.pack();
         //禁止手动调整窗口大小
@@ -280,9 +292,11 @@ public class ChessGame {
 
     class ProcessControl {
         private boolean move_end=false;
-
+        boolean[] choose=new boolean[3];
         public void StartControl(){
-            if(mod==THERE&&Judge.GetNowPlayer().GetGroup()==Judge.G_CHU) {
+            if(mod==HERE)
+                choice_panel.AddListener(choose);
+            if(mod!=HERE&&Judge.GetNowPlayer().GetGroup()==Judge.G_CHU) {
                 ChoiceJudge.Init().OtherEnd(false);
                 Receive();
                 ChoiceJudge.Init().OtherEnd(true);
@@ -293,15 +307,39 @@ public class ChessGame {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
-
+                if(mod==HERE) {
+                    if (choose[ChoicePanel.RESTART]){
+                        System.out.println("从新开始");
+                        choose[ChoicePanel.RESTART]=false;
+                        ReStart();
+                    }
+                    if (choose[ChoicePanel.RETRACT]){
+                        System.out.println("悔棋");
+                        choose[ChoicePanel.RETRACT]=false;
+                        Judge.GetNowPlayer().MakeChoice(Judge.C_RETRACT);//当前棋手做出“悔棋”选择
+                        if(ChoiceJudge.Init().DoJudge()) {  //判断选择是否合法
+                            //执行悔棋操作并重绘棋盘
+                            board.Retract();
+                            board.ResetSelect();
+                            board.UpdatePiecesCanGo();
+                            UpdateFrames();
+                            draw_board.repaint();
+                            board.UpdatePiecesCanGo();
+                        }
+                    }
+                    if(choose[ChoicePanel.MENU]){
+                        choose[ChoicePanel.MENU]=false;
+                        game_frame.dispose();
+                        GameEntrance.Start();
+                    }
+                }
                 if(move_end){
-                    if(mod==THERE){
+                    if(mod!=HERE){
                         ChoiceJudge.Init().OtherEnd(false);
                         internet.Send(board.GetNowSelect().GetPosition(),board.GetAimSelect().GetPosition());//发送数据
                     }
-
-
+                    else
+                        choice_panel.ChangeNowPoint();
                     board.MovePiece();  //移动棋子
 
                     //重置选择并重绘
@@ -312,7 +350,7 @@ public class ChessGame {
                     board.UpdatePiecesCanGo();
                     move_end=false;
 
-                    if(mod==THERE){
+                    if(mod!=HERE){
                         if(ResultJudge.Init().DoJudge()){
                             String name=Judge.getWinner().GetGroup()==Judge.G_HAN?"汉":"楚";
                             System.out.println(name+"获胜");
@@ -346,19 +384,25 @@ public class ChessGame {
                 }
                 finish.Close();
                 if(choose[0]==FinishFrame.FC_AGAIN) {
-                    board.ResetSelect();
-                    board.InitializePieces();
-                    board.UpdatePiecesCanGo();
-                    board.ClearStack();
-                    Judge.Resetting();
-                    ThinkingJudge.Resetting();
-                    UpdateFrames();
-                    draw_board.repaint();
+                    ReStart();
                 }
                 else if(choose[0]==FinishFrame.FC_EXIT){
                     System.exit(0);
                 }
             }
+        }
+
+        private void ReStart(){
+            board.ResetSelect();
+            board.InitializePieces();
+            board.UpdatePiecesCanGo();
+            board.ClearStack();
+            Judge.Resetting();
+            ThinkingJudge.Resetting();
+            UpdateFrames();
+            draw_board.repaint();
+            if(mod==HERE)
+                choice_panel.ChangeNowPoint();
         }
     }
 }
