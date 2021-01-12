@@ -100,7 +100,7 @@ public class ChessGame {
                         e.printStackTrace();
                     }
                 }
-                internet = new Client(add.toString(),1234);
+                internet = new Client(add.toString(),8886);
 
                 joiner.Close();
             }

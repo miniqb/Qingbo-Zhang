@@ -4,7 +4,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Arrays;
 
 public class CreateRoom {
     JFrame frame=new JFrame("创建棋局");
@@ -14,7 +13,7 @@ public class CreateRoom {
     String str_ip;
     void Init(){
         try {
-            str_ip=InetAddress.getLocalHost().getHostAddress();
+            str_ip=InetAddress.getLocalHost().getHostName();
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }

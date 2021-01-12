@@ -12,7 +12,7 @@ import java.net.Socket;
 public class Server implements Internet{
     private ServerSocket server;
     private Socket client;
-    private final int PORT=1234;
+    private final int PORT=8886;
     public Server(){
         try {
             server=new ServerSocket(PORT);
