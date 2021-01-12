@@ -1,12 +1,9 @@
 package Game;
 
-import Board.ChessBoard;
 import Judge.Judge;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class FinishFrame {
     public static final byte FC_AGAIN=1;

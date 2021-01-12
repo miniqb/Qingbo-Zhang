@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.Socket;
 
 public class Client implements Internet{

@@ -1,6 +1,5 @@
 package Game;
 
-import Board.ChessBoard;
 import Judge.*;
 
 import javax.swing.*;
@@ -54,17 +53,14 @@ public class ChoicePanel {
         pa_choice.add(La1);
         pa_choice.add(La2);
 
-        if(Judge.GetHome()==Judge.GetNowPlayer().GetGroup())
-        {
+        if(Judge.GetHome()==Judge.GetNowPlayer().GetGroup()){
             la1.setText("吉");
             la2.setText("  ");
         }
-        else
-        {
+        else{
             la2.setText("吉");
             la1.setText("");
         }
-
 
         b_huiqi.addMouseMotionListener(new MouseMotionAdapter(){
             @Override
@@ -133,13 +129,11 @@ public class ChoicePanel {
     }
 
     public void ChangeNowPoint(){
-        if(Judge.GetHome()==Judge.GetNowPlayer().GetGroup())
-        {
+        if(Judge.GetHome()==Judge.GetNowPlayer().GetGroup()){
             la1.setText("吉");
             la2.setText("  ");
         }
-        else
-        {
+        else{
             la2.setText("吉");
             la1.setText("");
         }

@@ -1,6 +1,5 @@
 package Piece;
 
-import Board.ChessBoard;
 import Judge.Judge;
 
 import javax.imageio.ImageIO;
