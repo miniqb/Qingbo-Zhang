@@ -1,7 +1,7 @@
 package Board;
 
 import Game.ChessGame;
-import Judge.Judge;
+import Judge.*;
 import Piece.*;
 
 import javax.imageio.ImageIO;
@@ -273,7 +273,9 @@ public class ChessBoard {
 
                 //将上一步选中棋子位置还原
                 pieces_all[step.piece].Move(step.start.x, step.start.y);
+                information_change=true;
             }
+
         }
     }
 
@@ -309,6 +311,11 @@ public class ChessBoard {
             }
             information_change=false;
         }
+    }
+
+    public void ClearStack(){
+        while (!record.empty())
+            record.pop();
     }
 
     public static class Step{

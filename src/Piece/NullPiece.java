@@ -4,6 +4,7 @@ import Board.ChessBoard;
 import Judge.Judge;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.List;
 
 public class NullPiece implements Piece{
@@ -11,6 +12,7 @@ public class NullPiece implements Piece{
      * 空子类，棋盘上没有子的地方就要放上空子，空子id只能为0，非空子id不能为1，空子名字固定为”Null“，空子状态固定为死亡，空子无阵营，空子保存了位置信息
      */
 
+    private final static List<Point> can_go=new ArrayList<>();
     private final static NullPiece[][] null_map = new NullPiece[ChessBoard.WIDTH+1][ChessBoard.HIGH+1]; //空子缓存，以后需要获取空子时直接在这里面获取
     static {//初始化空子缓存
         for (int i = 0; i < null_map.length; i++) {
@@ -18,6 +20,7 @@ public class NullPiece implements Piece{
                 null_map[i][j]=new NullPiece(i,j);
             }
         }
+        can_go.add(new Point(0,0));
     }
 
     private final Point position;
@@ -79,7 +82,7 @@ public class NullPiece implements Piece{
 
     @Override
     public List<Point> GetCanGo() {
-        return null;
+        return can_go;
     }
 
     @Override

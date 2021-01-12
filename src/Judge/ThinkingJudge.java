@@ -19,7 +19,7 @@ public class ThinkingJudge extends Judge{
 
     private ThinkingJudge(){}
     private final Point move_last=new Point(-1,-1); //上一次moving的位置
-    private boolean result=false;   //判断结果
+    private boolean thinking_result =false;   //判断结果
     /**
      * 判断选择的目标位置是否合法
      * @return 真表示合法
@@ -29,14 +29,14 @@ public class ThinkingJudge extends Judge{
         Point move_now=ChessBoard.Init().moving;
         //如果这次moving和上次moving所指向棋盘的位置相同，就直接返回上次判断的结果
         if(move_now.equals(move_last))
-            return result;
+            return thinking_result;
         Piece now=ChessBoard.Init().GetNowSelect();
         Piece aim=ChessBoard.Init().GetPiece(move_now.x,move_now.y);
         Piece head=Judge.GetNowPlayer().GetGroup()==Judge.G_HAN?ChessBoard.Init().GetShuai():ChessBoard.Init().GetJiang();
-        result=(!now.GetPosition().equals(aim.GetPosition())&&!WillHeadMeeting(now.GetPosition(),move_now)&&CanGo(now,aim.GetPosition())&&!WillHeadEaten(head,now.GetPosition(),move_now));
+        thinking_result =(!now.GetPosition().equals(aim.GetPosition())&&!WillHeadMeeting(now.GetPosition(),move_now)&&CanGo(now,aim.GetPosition())&&!WillHeadEaten(head,now.GetPosition(),move_now));
         move_last.setLocation(move_now);
-        is_right_position=result;
-        return result;
+        is_right_position= thinking_result;
+        return thinking_result;
     }
 
     /**
@@ -145,7 +145,7 @@ public class ThinkingJudge extends Judge{
 
     public static void Resetting(){
         me.move_last.setLocation(-1,-1);
-        me.result=false;
+        me.thinking_result =false;
     }
 }
 

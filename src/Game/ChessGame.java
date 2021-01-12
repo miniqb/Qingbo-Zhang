@@ -37,6 +37,7 @@ public class ChessGame {
             if(ChoiceJudge.Init().DoJudge()) {  //判断选择是否合法
                 //执行悔棋操作并重绘棋盘
                 board.Retract();
+                board.UpdatePiecesCanGo();
                 UpdateFrames();
                 draw_board.repaint();
                 board.UpdatePiecesCanGo();
@@ -315,17 +316,13 @@ public class ChessGame {
                         if(ResultJudge.Init().DoJudge()){
                             String name=Judge.getWinner().GetGroup()==Judge.G_HAN?"汉":"楚";
                             System.out.println(name+"获胜");
-                            System.exit(0);
+                            IsEnd();
                         }
                         ChoiceJudge.Init().OtherEnd(false);
                         Receive();
                         ChoiceJudge.Init().OtherEnd(true);
                     }
-                    if(ResultJudge.Init().DoJudge()){
-                        String name=Judge.getWinner().GetGroup()==Judge.G_HAN?"汉":"楚";
-                        System.out.println(name+"获胜");
-                        System.exit(0);
-                    }
+                    IsEnd();
 
                 }
             }
@@ -333,6 +330,35 @@ public class ChessGame {
 
         public void MoveEnd(){
             move_end=true;
+        }
+
+        private void IsEnd(){
+            if(ResultJudge.Init().DoJudge()){
+                byte[] choose={0};
+                FinishFrame finish=new FinishFrame();
+                finish.Init(choose);
+                while (choose[0]==0){
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                finish.Close();
+                if(choose[0]==FinishFrame.FC_AGAIN) {
+                    board.ResetSelect();
+                    board.InitializePieces();
+                    board.UpdatePiecesCanGo();
+                    board.ClearStack();
+                    Judge.Resetting();
+                    ThinkingJudge.Resetting();
+                    UpdateFrames();
+                    draw_board.repaint();
+                }
+                else if(choose[0]==FinishFrame.FC_EXIT){
+                    System.exit(0);
+                }
+            }
         }
     }
 }

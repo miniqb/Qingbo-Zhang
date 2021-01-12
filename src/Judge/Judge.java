@@ -268,4 +268,15 @@ public abstract class Judge {
         }
         return false;
     }
+
+    public static void Resetting(){
+        winner=null;
+        loser=null;
+        if(ChessGame.mod==ChessGame.HERE){
+            if(player_1.GetGroup()==G_HAN)
+                player_now=player_1;
+            else
+                player_now=player_2;
+        }
+    }
 }
