@@ -9,8 +9,6 @@ public class ChoiceJudge extends Judge{
 
     private static ChoiceJudge me;//单例对象
 
-    private boolean other_end=true;
-
     /**
      * 获取单例对象
      * @return 返回单例对象
@@ -28,8 +26,7 @@ public class ChoiceJudge extends Judge{
     @Override
     public boolean DoJudge() {
         boolean result=true;    //判断结果
-        switch (player_now.GetChoice())
-        {
+        switch (player_now.GetChoice()){
             case C_GO:
                 if(!other_end||!is_right_position)  //如果选中棋子和目标位置棋子相同或者目标位置棋子不合法
                     result=false;
@@ -40,6 +37,8 @@ public class ChoiceJudge extends Judge{
             case C_RETRACT:
                 break;
         }
+        if (result)
+            is_right_position=false;
         return result;//返回结果
     }
 

@@ -208,6 +208,9 @@ public class ChessBoard {
     public void SetNowSelect(int x,int y){
         now_select=pieces_map[x][y];
     }
+    public void SetNowSelect(Piece piece){
+        now_select=piece;
+    }
 
     /**
      * 设置目标位置棋子
@@ -216,6 +219,9 @@ public class ChessBoard {
      */
     public void SetAimSelect(int x,int y){
         aim_select=pieces_map[x][y];
+    }
+    public void SetAimSelect(Piece piece){
+        aim_select=piece;
     }
 
     /**

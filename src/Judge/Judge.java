@@ -12,6 +12,7 @@ public abstract class Judge {
     /**
      * 裁判类，让游戏按照规则进行
      */
+    public static boolean other_end=true;
 
     protected static boolean is_right_position=false;//目标位置是否合法
 

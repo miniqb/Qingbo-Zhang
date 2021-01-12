@@ -8,14 +8,10 @@ import Judge.*;
 import Piece.*;
 import Player.*;
 import Sound.WavPlayer;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class ChessGame {
@@ -23,8 +19,8 @@ public class ChessGame {
      * 用于管理游戏进行的类
      */
 
-    public static final byte HERE=0;
-    public static final byte THERE=1;
+    public static final byte HERE=1;
+    public static final byte THERE=2;
     //鼠标点击事件的事件适配器
     private final MouseAdapter mouse_click_play=new MyMouseAdapter();//下棋时的监听器
 
@@ -73,10 +69,9 @@ public class ChessGame {
     /**
      * 初始化各种数据
      */
-    public ChessGame(){
+    public ChessGame(byte choose){
         Scanner scanner=new Scanner(System.in);
-        System.out.println("请选择模式：同机（0），分机（1）");
-        mod=scanner.nextByte();
+        mod=choose;
         System.out.println("请选择先走还是后走：先：2;后：1");
         byte c_g=scanner.nextByte();
         //初始化玩家
@@ -133,20 +128,6 @@ public class ChessGame {
         UpdateFrames();
         //向窗口载入画板
         game_frame.add(draw_board);
-/*
-        JPanel information=new JPanel();
-        information.setPreferredSize(new Dimension(200,HIGH_SIZE));
-        information.setBackground(new Color(238,187,85));
-        JButton button1=new JButton("悔棋");
-
-        button1.setContentAreaFilled(false);//透明
-        button1.setFont(new Font("楷体", Font.BOLD,30));//字体
-        button1.setPreferredSize(new Dimension(100,50));//size
-        button1.setBorderPainted(false);//去边框
-
-        information.add(button1);
-        game_frame.add(information);
-*/
         game_frame.setLayout(new FlowLayout(FlowLayout.LEFT,0,0));
 
         //窗口自适应初始大小
@@ -224,22 +205,19 @@ public class ChessGame {
     class MyMouseAdapter extends MouseAdapter{
         @Override
         public void mousePressed(MouseEvent e) {    //响应鼠标“按下”事件的方法
+            if(!Judge.other_end)
+                return;
             //获取鼠标按下时在棋盘上的单位位置
             int posX=(int)((double)(e.getX()-OFFSET_W)/UNIT_SIZE+1);
             int posY=(int)((double)(e.getY()-OFFSET_H)/UNIT_SIZE+1);
             //如果位置在棋盘上（不在边缘处）
             if ( posX<=9 && posX>0 && posY<=10 && posY>0 && e.getButton()==MouseEvent.BUTTON1) {
                 if(board.GetAimSelect().GetID()==NullPiece.ID && board.GetNowSelect().GetID()==NullPiece.ID) {//如果当前未选择任何有效棋子则选中该棋子
-                    board.SetNowSelect(posX,posY);
-                    boolean play_pick=true; //是否播放执子音效
-
-                    if(board.GetNowSelect().GetGroup()!=Judge.GetNowPlayer().GetGroup()) {//如果选择了对方棋子则重置选择
-                        board.ResetSelect();
-                        play_pick=false;    //不播放执子音效
-                    }
-
-                    if(play_pick)   //是否播放执子音效
-                        new WavPlayer(WavPlayer.PICK).start();
+                    Piece piece=board.GetPiece(posX,posY);
+                    if(piece.GetGroup()!=Judge.GetNowPlayer().GetGroup())
+                        return;
+                    board.SetNowSelect(piece);
+                    new WavPlayer(WavPlayer.PICK).start();
                     //点击时将棋子移动到合适位置，增强观感
                     UpdateFrames();
                     game_image.getGraphics().drawImage(board.GetNowSelect().GetImage()[0], e.getX()-UNIT_SIZE/2, e.getY()-UNIT_SIZE/2, null);
@@ -253,11 +231,7 @@ public class ChessGame {
                             new WavPlayer(WavPlayer.GO).start();
                         else
                             new WavPlayer(WavPlayer.EAT).start();
-
                         control.MoveEnd();
-
-
-
                     }
                     else {   //如果当前选择不合法
                         new WavPlayer(WavPlayer.BACK).start();  //播放放弃执子音效
@@ -331,6 +305,7 @@ public class ChessGame {
                     board.MovePiece();  //移动棋子
 
                     //重置选择并重绘
+                    ThinkingJudge.Resetting();
                     board.ResetSelect();
                     UpdateFrames();
                     draw_board.repaint();
