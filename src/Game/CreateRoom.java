@@ -9,7 +9,7 @@ import java.util.Arrays;
 public class CreateRoom {
     JFrame frame=new JFrame("创建棋局");
     JPanel panel=new JPanel();
-    JLabel points=new JLabel("请要加入的玩家输入该主机名:");
+    JLabel points=new JLabel("请要加入的玩家输入该IP地址:");
     JLabel IP=new JLabel();
     String str_ip;
     void Init(){
