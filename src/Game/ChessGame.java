@@ -92,7 +92,6 @@ public class ChessGame {
             else {
                 JoinRoom joiner=new JoinRoom();
                 StringBuffer add=new StringBuffer();
-                //String add ="null";
                 joiner.Init(add);
                 while (add.length()==0){
                     try {

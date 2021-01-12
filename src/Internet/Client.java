@@ -7,19 +7,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 
 public class Client implements Internet{
     private Socket client;
     public Client(String add,int port) {
         try {
+            InetSocketAddress address=new InetSocketAddress(add,port);
             System.out.println("客户器端正在尝试连接服务器端。。。");
-            client = new Socket(add, port);
+            client = new Socket();
+            client.connect(address);
             System.out.println(InetAddress.getLocalHost().getHostName());
             System.out.println("客户端已成功连接到服务器端");
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("error");
+            System.out.println("未知的主机名");
         }
     }
 

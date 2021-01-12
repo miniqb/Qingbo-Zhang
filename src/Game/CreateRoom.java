@@ -14,7 +14,7 @@ public class CreateRoom {
     String str_ip;
     void Init(){
         try {
-            str_ip=InetAddress.getLocalHost().getHostName();
+            str_ip=InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
